@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # --------------------------------------------------------------------------
+  # Node.js: tests + archgate ADR check
+  # --------------------------------------------------------------------------
+  node:
+    name: Node.js tests & ADR check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+        with:
+          cache: true
+
+      - name: Install Node.js dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
+
+      - name: Archgate ADR compliance check
+        run: npx --yes archgate@latest check
+
+  # --------------------------------------------------------------------------
+  # Python: pipeline runner tests + lint
+  # --------------------------------------------------------------------------
+  python:
+    name: Python pipeline-runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tools/pipeline_runner
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+        with:
+          cache: true
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Ruff lint
+        run: poetry run ruff check .
+
+      - name: Mypy type check
+        run: poetry run mypy pipeline_runner
+
+      - name: Run tests
+        run: poetry run pytest --tb=short
+
+  # --------------------------------------------------------------------------
+  # Gate: require both jobs to pass
+  # --------------------------------------------------------------------------
+  status:
+    name: All checks passed
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [node, python]
+    steps:
+      - name: Check results
+        run: |
+          if [[ "${{ needs.node.result }}" != "success" ]] || \
+             [[ "${{ needs.python.result }}" != "success" ]]; then
+            echo "::error::One or more jobs failed"
+            exit 1
+          fi
+          echo "All CI checks passed."

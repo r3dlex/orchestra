@@ -1,0 +1,22 @@
+[tools]
+python = "3.12"
+node = "22"
+
+[tasks.test]
+description = "Run Node.js test suite"
+run = "npm test"
+
+[tasks."pipeline:install"]
+description = "Install pipeline runner dependencies"
+run = "cd tools/pipeline_runner && poetry install --no-interaction"
+depends = ["python"]
+
+[tasks.pipeline]
+description = "Run a pipeline (usage: mise run pipeline -- run ci)"
+run = "cd tools/pipeline_runner && poetry run pipeline"
+depends = ["pipeline:install"]
+
+[tasks.ci]
+description = "Run full CI via pipeline runner"
+run = "cd tools/pipeline_runner && poetry run pipeline run ci"
+depends = ["pipeline:install"]
