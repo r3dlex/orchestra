@@ -70,6 +70,11 @@ mix pipeline
 
 # Build a zero-install binary (requires Zig 0.13.0)
 mix release
+
+# Or use the Makefile for common dev targets
+make test
+make test-e2e MINIMAX_API_KEY=sk-cp-...
+make codex-login && make test-codex
 ```
 
 **Requirements:** Elixir 1.17+, Erlang/OTP 26+. Zig 0.13.0 for binary builds only.
@@ -94,7 +99,15 @@ Full details:
 - [spec/musician-architecture.md](spec/musician-architecture.md) — Umbrella structure and core abstractions
 - [spec/musician-providers.md](spec/musician-providers.md) — Provider system and SSE streaming
 - [spec/musician-testing.md](spec/musician-testing.md) — Testing strategy and E2E conventions
+- [spec/musician-cli.md](spec/musician-cli.md) — CLI entrypoint, Mix tasks, Burrito binary
 - [.archgate/adrs/](.archgate/adrs/) — Architecture Decision Records
+
+**claude-code reference specs:**
+- [spec/architecture.md](spec/architecture.md) — claude-code system architecture
+- [spec/tools.md](spec/tools.md) — Tool system specification
+- [spec/commands.md](spec/commands.md) — Command system specification
+- [spec/state-management.md](spec/state-management.md) — State management patterns
+- [spec/decompilation.md](spec/decompilation.md) — Source recovery methodology
 
 ---
 

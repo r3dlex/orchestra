@@ -10,9 +10,9 @@ apps/
 ├── musician_skills/   # SKILL.md engine, skill registry, self-improvement loop
 ├── musician_memory/   # SQLite FTS5 persistent memory store
 ├── musician_session/  # JSONL session history, replay, search
-├── musician_tui/      # Ratatouille terminal UI
-├── musician_cli/      # Burrito binary entrypoint, Mix tasks (pipeline, bench)
 ├── musician_plugins/  # Plugin registry, hook system, lifecycle
+├── musician_tui/      # Ratatouille terminal UI
+├── musician_cli/      # Burrito binary entrypoint, Mix tasks
 └── orchestra/         # Multi-agent orchestration plugin
 ```
 
@@ -20,14 +20,23 @@ apps/
 
 ```
 musician_cli
-  └── musician_tui
-        └── orchestra
-              └── musician_plugins, musician_tools, musician_skills, musician_session, musician_memory
-                    └── musician_auth
-                          └── musician_core
+  └── musician_core
+  └── musician_auth
+  └── musician_tools
+  └── musician_plugins
+
+musician_tui
+  └── orchestra
+        └── musician_plugins
+        └── musician_tools
+        └── musician_skills
+        └── musician_session
+        └── musician_memory
+              └── musician_auth
+                    └── musician_core
 ```
 
-All apps share `musician_core` at the bottom. `musician_plugins` sits alongside the other middleware apps under `orchestra`. No circular deps.
+`orchestra` is the orchestration plugin. `musician_cli` is the binary entrypoint that depends directly on `musician_core`, `musician_auth`, `musician_tools`, and `musician_plugins`. All apps share `musician_core` at the bottom. No circular deps.
 
 ## Core Abstractions
 
@@ -107,4 +116,37 @@ providers:
 | ARCH-001 | Elixir umbrella for isolation between concerns |
 | ARCH-002 | Provider-agnostic via behaviour + presets |
 | ARCH-008 | Ratatouille for TUI (not Ink/React) |
+| ARCH-009 | Codex device code flow via auth0.openai.com |
 | ARCH-015 | Burrito for zero-install binary distribution |
+
+## CLI App (`musician_cli`)
+
+Entry point for the published binary. Key modules:
+
+| Module | Purpose |
+|--------|---------|
+| `MusicianCli.Cli` | Argument parsing, help, subcommand dispatch |
+| `MusicianCli.Application` | OTP application supervisor (no workers in v0.1) |
+
+### Mix Tasks
+
+| Task | Module | Purpose |
+|------|-------|---------|
+| `mix pipeline` | `Mix.Tasks.Pipeline` | Full CI pipeline (format → compile → credo → tests → artifacts) |
+| `mix test.artifacts` | `Mix.Tasks.Test.Artifacts` | Generate CI proof artifacts in `artifacts/` |
+| `mix musician.codex.login` | `Mix.Tasks.Musician.Codex.Login` | Device code auth, tokens stored at `~/.musician/auth/codex.yaml` |
+
+### Burrito Release
+
+The `musician` release builds a zero-install binary via Burrito:
+
+```elixir
+releases: [
+  musician: [
+    steps: [:assemble, &Burrito.wrap/1],
+    burrito: [targets: [linux: [...], macos_intel: [...], macos_arm: [...]]]
+  ]
+]
+```
+
+Requires Zig 0.13.0 at build time.

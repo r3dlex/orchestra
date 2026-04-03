@@ -93,3 +93,4 @@ All 5 phases complete. 184 tests passing, 0 failures. All 10 apps functional.
 - **[spec/musician-architecture.md](spec/musician-architecture.md)** — Umbrella structure, dependency graph, core abstractions
 - **[spec/musician-providers.md](spec/musician-providers.md)** — Provider behaviour, OpenAI compat, SSE streaming, Codex device flow
 - **[spec/musician-testing.md](spec/musician-testing.md)** — Unit + E2E testing strategy, conventions, known free-tier quirks
+- **[spec/musician-cli.md](spec/musician-cli.md)** — CLI entrypoint, Mix tasks, Burrito binary, .env support
