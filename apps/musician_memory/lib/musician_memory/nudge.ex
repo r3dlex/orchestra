@@ -6,7 +6,9 @@ defmodule MusicianMemory.Nudge do
       {:ok, dt, _} ->
         elapsed = DateTime.diff(DateTime.utc_now(), dt, :second) / 60
         elapsed >= interval_minutes
-      _ -> true
+
+      _ ->
+        true
     end
   end
 

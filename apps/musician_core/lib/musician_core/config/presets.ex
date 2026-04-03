@@ -11,9 +11,9 @@ defmodule MusicianCore.Config.Presets do
   def all do
     %{
       "minimax" => %ProviderConfig{
-        api_base: "https://api.minimax.chat/v1",
-        model: "abab7-chat",
-        api_key_env: "MINIMAX_API_KEY"
+        api_base: "https://api.minimaxi.chat/v1",
+        model: "MiniMax-M2.7",
+        api_key_env: "ANTHROPIC_AUTH_TOKEN"
       },
       "claude" => %ProviderConfig{
         api_base: "https://api.anthropic.com/v1",

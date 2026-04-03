@@ -4,9 +4,11 @@ defmodule Orchestra.Backends.Registry do
   @backends [:musician, :claude, :codex, :gemini]
 
   def detect do
-    paths = Enum.map(@backends, fn name ->
-      {name, System.find_executable(Atom.to_string(name))}
-    end)
+    paths =
+      Enum.map(@backends, fn name ->
+        {name, System.find_executable(Atom.to_string(name))}
+      end)
+
     detect_with(paths)
   end
 

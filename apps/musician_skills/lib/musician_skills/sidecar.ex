@@ -8,8 +8,12 @@ defmodule MusicianSkills.Sidecar do
           {:ok, data} -> {:ok, data}
           {:error, reason} -> {:error, {:parse_error, reason}}
         end
-      {:error, :enoent} -> {:error, :not_found}
-      {:error, reason} -> {:error, reason}
+
+      {:error, :enoent} ->
+        {:error, :not_found}
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 

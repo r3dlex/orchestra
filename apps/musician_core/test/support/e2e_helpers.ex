@@ -21,6 +21,7 @@ defmodule MusicianCore.E2EHelpers do
       {:ok, pid} ->
         Process.unlink(pid)
         :ok
+
       {:error, {:already_started, pid}} ->
         Process.unlink(pid)
         :ok

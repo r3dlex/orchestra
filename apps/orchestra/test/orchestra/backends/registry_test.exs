@@ -9,11 +9,19 @@ defmodule Orchestra.Backends.RegistryTest do
   end
 
   test "detect_with/1 returns {:error, :no_backends} when all paths are nil" do
-    assert {:error, :no_backends} = Registry.detect_with(musician: nil, claude: nil, codex: nil, gemini: nil)
+    assert {:error, :no_backends} =
+             Registry.detect_with(musician: nil, claude: nil, codex: nil, gemini: nil)
   end
 
   test "detect_with/1 returns {:ok, backends} when at least one path is non-nil" do
-    assert {:ok, backends} = Registry.detect_with(musician: "/usr/bin/musician", claude: nil, codex: nil, gemini: nil)
+    assert {:ok, backends} =
+             Registry.detect_with(
+               musician: "/usr/bin/musician",
+               claude: nil,
+               codex: nil,
+               gemini: nil
+             )
+
     assert {:musician, "/usr/bin/musician"} in backends
   end
 end

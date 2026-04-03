@@ -15,6 +15,7 @@ defmodule MusicianSkills.Creator do
 
     #{body}
     """
+
     File.write!(Path.join(skill_path, "SKILL.md"), skill_md)
 
     sidecar = """
@@ -23,6 +24,7 @@ defmodule MusicianSkills.Creator do
     status: draft
     total_invocations: 0
     """
+
     File.write!(Path.join(skill_path, ".musician.yaml"), sidecar)
 
     {:ok, skill_path}

@@ -28,7 +28,14 @@ defmodule Mix.Tasks.Musician.Codex.Login do
     Mix.shell().info("Requesting Codex device code...")
 
     case MusicianAuth.CodexDevice.request_device_code() do
-      {:ok, %{user_code: code, verification_uri: uri, device_code: dc, interval: interval, expires_in: exp}} ->
+      {:ok,
+       %{
+         user_code: code,
+         verification_uri: uri,
+         device_code: dc,
+         interval: interval,
+         expires_in: exp
+       }} ->
         Mix.shell().info("""
 
         ┌─────────────────────────────────────────────────┐
@@ -51,9 +58,13 @@ defmodule Mix.Tasks.Musician.Codex.Login do
               "expires_in" => tokens.expires_in,
               "token_type" => tokens.token_type
             }
+
             case MusicianAuth.TokenStore.write("codex", token_map) do
               :ok ->
-                Mix.shell().info("Codex login successful. Tokens saved to ~/.musician/auth/codex.yaml")
+                Mix.shell().info(
+                  "Codex login successful. Tokens saved to ~/.musician/auth/codex.yaml"
+                )
+
               {:error, reason} ->
                 Mix.raise("Failed to save tokens: #{inspect(reason)}")
             end

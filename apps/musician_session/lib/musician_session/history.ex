@@ -13,9 +13,14 @@ defmodule MusicianSession.History do
           content
           |> String.split("\n", trim: true)
           |> Enum.map(&Jason.decode!/1)
+
         {:ok, entries}
-      {:error, :enoent} -> {:error, :not_found}
-      {:error, reason} -> {:error, reason}
+
+      {:error, :enoent} ->
+        {:error, :not_found}
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -25,8 +30,12 @@ defmodule MusicianSession.History do
         kept = Enum.take(entries, -keep_count)
         lines = Enum.map_join(kept, "\n", &Jason.encode!/1) <> "\n"
         File.write(path, lines)
-      {:error, :not_found} -> :ok
-      error -> error
+
+      {:error, :not_found} ->
+        :ok
+
+      error ->
+        error
     end
   end
 end

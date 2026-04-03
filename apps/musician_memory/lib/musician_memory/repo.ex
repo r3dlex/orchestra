@@ -11,7 +11,10 @@ defmodule MusicianMemory.Repo do
 
   def insert(db, %{type: type, scope: scope, body: body, tags: tags}) do
     now = DateTime.utc_now() |> DateTime.to_iso8601()
-    sql = "INSERT INTO memories (type, scope, body, tags, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?5)"
+
+    sql =
+      "INSERT INTO memories (type, scope, body, tags, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?5)"
+
     {:ok, stmt} = Exqlite.Sqlite3.prepare(db, sql)
     :ok = Exqlite.Sqlite3.bind(stmt, [type, scope, body, tags, now])
     :done = Exqlite.Sqlite3.step(db, stmt)
@@ -23,10 +26,12 @@ defmodule MusicianMemory.Repo do
     sql = "SELECT id, type, scope, body, tags, created_at, updated_at FROM memories WHERE id = ?1"
     {:ok, stmt} = Exqlite.Sqlite3.prepare(db, sql)
     :ok = Exqlite.Sqlite3.bind(stmt, [id])
+
     case Exqlite.Sqlite3.step(db, stmt) do
       {:row, row} ->
         :ok = Exqlite.Sqlite3.release(db, stmt)
         {:ok, row_to_map(row)}
+
       :done ->
         :ok = Exqlite.Sqlite3.release(db, stmt)
         {:error, :not_found}
@@ -34,7 +39,9 @@ defmodule MusicianMemory.Repo do
   end
 
   def search(db, query) do
-    sql = "SELECT m.id, m.type, m.scope, m.body, m.tags, m.created_at, m.updated_at FROM memories_fts fts JOIN memories m ON fts.rowid = m.id WHERE memories_fts MATCH ?1"
+    sql =
+      "SELECT m.id, m.type, m.scope, m.body, m.tags, m.created_at, m.updated_at FROM memories_fts fts JOIN memories m ON fts.rowid = m.id WHERE memories_fts MATCH ?1"
+
     {:ok, stmt} = Exqlite.Sqlite3.prepare(db, sql)
     :ok = Exqlite.Sqlite3.bind(stmt, [query])
     rows = collect_rows(db, stmt, [])
@@ -75,16 +82,19 @@ defmodule MusicianMemory.Repo do
       updated_at TEXT NOT NULL
     )
     """)
+
     Exqlite.Sqlite3.execute(db, """
     CREATE VIRTUAL TABLE IF NOT EXISTS memories_fts USING fts5(
       body, tags, content=memories, content_rowid=id
     )
     """)
+
     Exqlite.Sqlite3.execute(db, """
     CREATE TRIGGER IF NOT EXISTS memories_ai AFTER INSERT ON memories BEGIN
       INSERT INTO memories_fts(rowid, body, tags) VALUES (new.id, new.body, new.tags);
     END
     """)
+
     :ok
   end
 
@@ -103,7 +113,14 @@ defmodule MusicianMemory.Repo do
   end
 
   defp row_to_map([id, type, scope, body, tags, created_at, updated_at]) do
-    %{"id" => id, "type" => type, "scope" => scope, "body" => body,
-      "tags" => tags, "created_at" => created_at, "updated_at" => updated_at}
+    %{
+      "id" => id,
+      "type" => type,
+      "scope" => scope,
+      "body" => body,
+      "tags" => tags,
+      "created_at" => created_at,
+      "updated_at" => updated_at
+    }
   end
 end

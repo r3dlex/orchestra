@@ -11,6 +11,7 @@ defmodule MusicianCore.Provider.MiniMaxStreamingE2ETest do
 
   test "stream/2 emits at least 1 chunk from MiniMax" do
     key = System.get_env("MINIMAX_API_KEY")
+
     if is_nil(key) or key == "" do
       IO.puts("\n[skip] MINIMAX_API_KEY not set")
     else
@@ -19,12 +20,14 @@ defmodule MusicianCore.Provider.MiniMaxStreamingE2ETest do
         model: "MiniMax-Text-01",
         api_key_env: "MINIMAX_API_KEY"
       }
+
       request = %Request{
         model: "MiniMax-Text-01",
         messages: [%{"role" => "user", "content" => "Say hi in one word."}],
         stream: true,
         temperature: 0.0
       }
+
       {:ok, stream} = OpenAICompat.stream(config, request)
       chunks = Enum.to_list(stream)
       IO.puts("\n[MiniMax streaming] #{length(chunks)} chunks received")

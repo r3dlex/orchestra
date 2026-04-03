@@ -15,6 +15,7 @@ defmodule Orchestra.Ralph do
       {:error, :max_retries}
     else
       state = Map.update!(state, :attempts, &(&1 + 1))
+
       case verifier.(state) do
         :pass -> {:ok, :done}
         :fail -> loop(state, verifier, max_retries)

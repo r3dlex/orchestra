@@ -37,6 +37,7 @@ defmodule MusicianCore.Provider.OpenAICompat do
   end
 
   @impl true
+  @spec stream(ProviderConfig.t(), Request.t()) :: {:ok, Enumerable.t()} | {:error, term()}
   def stream(%ProviderConfig{} = config, %Request{} = request) do
     url = "#{config.api_base}/chat/completions"
     headers = build_headers(config)
@@ -55,6 +56,7 @@ defmodule MusicianCore.Provider.OpenAICompat do
         end,
         receive_timeout: 30_000
       )
+
       send(parent, {ref, :done})
     end)
 
@@ -106,5 +108,4 @@ defmodule MusicianCore.Provider.OpenAICompat do
       nil -> 60
     end
   end
-
 end

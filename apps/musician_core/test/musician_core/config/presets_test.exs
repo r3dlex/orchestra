@@ -15,8 +15,8 @@ defmodule MusicianCore.Config.PresetsTest do
 
   test "get/1 returns correct preset" do
     minimax = Presets.get("minimax")
-    assert minimax.api_base == "https://api.minimax.chat/v1"
-    assert minimax.model == "abab7-chat"
+    assert minimax.api_base == "https://api.minimaxi.chat/v1"
+    assert minimax.model == "MiniMax-M2.7"
   end
 
   test "claude preset has native: true" do
