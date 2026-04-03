@@ -21,3 +21,33 @@ Thumbs.db
 
 # Build artifacts
 *.map
+
+# Elixir / Mix
+_build/
+deps/
+*.beam
+*.plt
+erl_crash.dump
+.elixir_ls/
+.lexical/
+*.ez
+
+# Burrito
+burrito_out/
+
+# ExCoveralls
+cover/
+
+# Dialyzer
+priv/plts/
+
+# Artifacts
+artifacts/
+
+# OMC runtime state (not project config)
+.omc/state/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local

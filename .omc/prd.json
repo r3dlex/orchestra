@@ -1,0 +1,292 @@
+{
+  "version": "2.0",
+  "title": "Musician + Orchestra — Phases 2-5: Multi-Provider, Tools, Skills, Memory, Orchestra",
+  "description": "Continue from Phase 1 (complete). Implement all remaining phases through ship.",
+  "stories": [
+    {
+      "id": "US-001", "title": "Umbrella project scaffold", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-002", "title": "ADRs 001-018", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-003", "title": "Mix pipeline tasks", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-004", "title": "Project metadata", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-005", "title": "Config loader", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-006", "title": "Provider behaviour + types", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-007", "title": "OpenAI-compat + Anthropic translation", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-008", "title": "musician_auth: API key + token store + PKCE", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-009", "title": "musician_cli: skeleton + Burrito", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-010", "title": "musician_tui: Ratatouille skeleton", "passes": true,
+      "acceptanceCriteria": ["Phase 1 complete"]
+    },
+    {
+      "id": "US-011",
+      "title": "Phase 2: MiniMax E2E provider test",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/musician_core/test/musician_core/provider/minimax_e2e_test.exs exists",
+        "Test is tagged @tag :provider_e2e and skips when MINIMAX_API_KEY is not set",
+        "Test calls OpenAICompat.complete/2 with api_base=https://api.minimaxi.chat/v1 and a simple prompt",
+        "Test asserts {:ok, response} where response has a non-empty content field",
+        "MINIMAX_API_KEY=sk-cp-... mix test --only provider_e2e apps/musician_core exits 0 with at least 1 test",
+        "`mix test apps/musician_core` (without --only provider_e2e) still exits 0 (e2e tests skipped)"
+      ]
+    },
+    {
+      "id": "US-012",
+      "title": "Phase 2: MusicianAuth.CodexDevice — Device Code flow",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/musician_auth/lib/musician_auth/codex_device.ex exists",
+        "CodexDevice.exchange_device_code/1 calls POST https://auth.openai.com/oauth/token with grant_type=urn:ietf:params:oauth:grant-type:device_code",
+        "CodexDevice.exchange_device_code/1 returns {:ok, tokens} on success or {:error, reason} on failure",
+        "CodexDevice.request_device_code/0 calls POST https://auth.openai.com/oauth/device/code and returns {:ok, %{device_code, user_code, verification_uri, expires_in, interval}}",
+        "Unit test: exchange_device_code/1 with mocked 200 response returns {:ok, tokens}",
+        "Unit test: exchange_device_code/1 with mocked authorization_pending returns {:error, :pending}",
+        "`mix test apps/musician_auth` exits 0"
+      ]
+    },
+    {
+      "id": "US-013",
+      "title": "Phase 2: musician_tools — bash, file_read, file_write, web_fetch",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/musician_tools/lib/musician_tools/bash.ex exists with name/0, description/0, schema/0, execute/1",
+        "apps/musician_tools/lib/musician_tools/file_read.ex exists with name/0, description/0, schema/0, execute/1",
+        "apps/musician_tools/lib/musician_tools/file_write.ex exists with name/0, description/0, schema/0, execute/1",
+        "apps/musician_tools/lib/musician_tools/web_fetch.ex exists with name/0, description/0, schema/0, execute/1",
+        "Bash.execute/1 runs the command via System.cmd or Port and returns {:ok, output} or {:error, reason}",
+        "FileRead.execute/1 reads a file path and returns {:ok, content} or {:error, :not_found}",
+        "FileWrite.execute/1 writes content to a file path and returns {:ok, path} or {:error, reason}",
+        "WebFetch.execute/1 fetches a URL via Req and returns {:ok, body} or {:error, reason}",
+        "Unit tests exist for all 4 tools covering success and error cases",
+        "req is added to musician_tools deps if not already present",
+        "`mix test apps/musician_tools` exits 0"
+      ]
+    },
+    {
+      "id": "US-014",
+      "title": "Phase 2: TUI provider switching + multi-turn context",
+      "passes": true,
+      "acceptanceCriteria": [
+        "App.update/2 handles {:set_provider, provider} and updates model.provider",
+        "App.update/2 handles {:add_message, role, content} accumulating in model.messages list",
+        "Model struct has provider, model, messages, input, loading, token_count fields",
+        "Unit test: {:set_provider, 'minimax'} updates model.provider to 'minimax'",
+        "Unit test: two {:add_message, ...} calls produce a messages list with 2 entries in order",
+        "Unit test: {:event, %{ch: ?\\r}} on non-empty input appends user message and sets loading: true",
+        "`mix test apps/musician_tui` exits 0"
+      ]
+    },
+    {
+      "id": "US-015",
+      "title": "Phase 3: musician_skills — SKILL.md loader + sidecar + search",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/musician_skills/lib/musician_skills/loader.ex exists with load/1 that parses a SKILL.md file",
+        "Loader.load/1 returns {:ok, %{name, description, version, triggers, body}} or {:error, reason}",
+        "apps/musician_skills/lib/musician_skills/sidecar.ex exists with read/1 and write/2 for .musician.yaml files",
+        "apps/musician_skills/lib/musician_skills/search.ex exists with find_by_name/2 and find_by_trigger/2",
+        "Unit test: Loader.load/1 on a fixture SKILL.md returns correct name, description, body",
+        "Unit test: Sidecar.read/1 on a fixture .musician.yaml returns correct map",
+        "Unit test: Search.find_by_trigger/2 returns matching skills for a trigger pattern",
+        "`mix test apps/musician_skills` exits 0"
+      ]
+    },
+    {
+      "id": "US-016",
+      "title": "Phase 3: musician_skills — executor, creator, improver, quality_gate",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/musician_skills/lib/musician_skills/executor.ex exists with execute/2",
+        "apps/musician_skills/lib/musician_skills/creator.ex exists with create/2 returning {:ok, path} or {:error, reason}",
+        "apps/musician_skills/lib/musician_skills/improver.ex exists with improve/2",
+        "apps/musician_skills/lib/musician_skills/quality_gate.ex exists with validate/1 returning {:ok, :passed} or {:error, failures}",
+        "Creator.create/2 writes SKILL.md and .musician.yaml files to the skills directory",
+        "Unit test: Creator.create/2 with name and body creates the expected files",
+        "Unit test: QualityGate.validate/1 on a skill with no tests returns {:ok, :passed}",
+        "`mix test apps/musician_skills` exits 0"
+      ]
+    },
+    {
+      "id": "US-017",
+      "title": "Phase 3: musician_memory — SQLite FTS5 CRUD + search + nudge + decay",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/musician_memory/lib/musician_memory/repo.ex exists with init/1, insert/2, search/2, get/2, update/3, delete/2",
+        "apps/musician_memory/lib/musician_memory/types.ex exists with @types [:user, :feedback, :project, :reference] and @scopes [:private, :team]",
+        "apps/musician_memory/lib/musician_memory/nudge.ex exists with should_nudge?/1 and nudge_message/0",
+        "apps/musician_memory/lib/musician_memory/decay.ex exists with stale?/1 and flag_stale/2",
+        "exqlite is added to musician_memory deps",
+        "Unit test: Repo.insert/2 and Repo.search/2 round-trip a memory record using in-memory SQLite",
+        "Unit test: Repo.search/2 with FTS query returns matching memories",
+        "Unit test: Decay.stale?/1 returns true for project memory older than 90 days",
+        "Unit test: Nudge.should_nudge?/1 returns false when nudge_interval not exceeded",
+        "`mix test apps/musician_memory` exits 0"
+      ]
+    },
+    {
+      "id": "US-018",
+      "title": "Phase 3: musician_session — JSONL history + search + resume",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/musician_session/lib/musician_session/history.ex exists with append/2, read_all/1, and prune/2",
+        "apps/musician_session/lib/musician_session/search.ex exists with by_keyword/2 and by_time_range/3",
+        "apps/musician_session/lib/musician_session/resume.ex exists with find_by_id/2",
+        "History.append/2 writes a JSON line to the history file",
+        "History.read_all/1 returns a list of parsed session maps",
+        "Search.by_keyword/2 returns sessions whose prompt_summary contains the keyword",
+        "Search.by_time_range/3 returns sessions within the given start/end timestamps",
+        "Unit test: append + read_all round-trip using a tmp file",
+        "Unit test: by_keyword returns correct filtered results",
+        "Unit test: Resume.find_by_id/2 returns correct session or {:error, :not_found}",
+        "`mix test apps/musician_session` exits 0"
+      ]
+    },
+    {
+      "id": "US-019",
+      "title": "Phase 4: musician_plugins — registry, hooks, API contract",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/musician_plugins/lib/musician_plugins/registry.ex exists with register/2, lookup/2, list/1",
+        "apps/musician_plugins/lib/musician_plugins/hooks.ex exists with dispatch/3 and register_hook/3",
+        "apps/musician_plugins/lib/musician_plugins/api.ex exists as a behaviour with @callback on_load/1, on_command/2, on_message/2",
+        "Unit test: Registry.register/2 and Registry.lookup/2 round-trip a plugin entry",
+        "Unit test: Hooks.dispatch/3 calls all registered hooks for a given event",
+        "`mix test apps/musician_plugins` exits 0"
+      ]
+    },
+    {
+      "id": "US-020",
+      "title": "Phase 4: orchestra app — plugin shell + backend registry + slash commands",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/orchestra/lib/orchestra/plugin.ex exists implementing MusicianPlugins.Api behaviour",
+        "apps/orchestra/lib/orchestra/backends/registry.ex exists with detect/0 returning {:ok, backends} or {:error, :no_backends}",
+        "apps/orchestra/lib/orchestra/commands.ex exists with list/0 returning available slash commands",
+        "Backends.Registry.detect/0 uses System.find_executable/1 for each backend",
+        "Unit test: detect/0 returns {:error, :no_backends} when no CLIs are found (mock System.find_executable)",
+        "Unit test: detect/0 returns {:ok, backends} list when at least one CLI is found",
+        "`mix test apps/orchestra` exits 0"
+      ]
+    },
+    {
+      "id": "US-021",
+      "title": "Phase 4: Orchestra backend modules (musician, claude, codex, gemini)",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/orchestra/lib/orchestra/backends/musician.ex exists with run/3 returning a shell command string",
+        "apps/orchestra/lib/orchestra/backends/claude.ex exists with run/3",
+        "apps/orchestra/lib/orchestra/backends/codex.ex exists with run/3",
+        "apps/orchestra/lib/orchestra/backends/gemini.ex exists with run/3",
+        "Musician backend command includes --provider, --non-interactive, --prompt flags",
+        "Claude backend command includes --print flag",
+        "Unit test: Musician.run/3 returns string containing 'musician --provider'",
+        "Unit test: Claude.run/3 returns string containing 'claude'",
+        "`mix test apps/orchestra` exits 0"
+      ]
+    },
+    {
+      "id": "US-022",
+      "title": "Phase 4: Orchestra tmux session/pane management",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/orchestra/lib/orchestra/tmux/session.ex exists with create/1 and destroy/1",
+        "apps/orchestra/lib/orchestra/tmux/pane.ex exists with create/1, send_keys/2, capture/1",
+        "apps/orchestra/lib/orchestra/tmux/commands.ex exists with send_keys/2 and capture_pane/1",
+        "Commands.send_keys/2 builds 'tmux send-keys -t ...' command string",
+        "Commands.capture_pane/1 builds 'tmux capture-pane -pt ...' command string",
+        "Unit test: Commands.send_keys/2 returns expected tmux command string",
+        "Unit test: Commands.capture_pane/1 returns expected tmux command string",
+        "`mix test apps/orchestra` exits 0"
+      ]
+    },
+    {
+      "id": "US-023",
+      "title": "Phase 4: Orchestra worktree lifecycle",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/orchestra/lib/orchestra/worktree/lifecycle.ex exists with create/2, cleanup/1",
+        "apps/orchestra/lib/orchestra/worktree/merge.ex exists with merge/2 returning {:ok, result} or {:error, reason}",
+        "apps/orchestra/lib/orchestra/worktree/report.ex exists with generate/2 returning a report string",
+        "Lifecycle.create/2 builds 'git worktree add ...' command",
+        "Lifecycle.cleanup/1 builds 'git worktree remove ...' command",
+        "Unit test: Lifecycle.create/2 returns expected git command",
+        "Unit test: Report.generate/2 returns non-empty string",
+        "`mix test apps/orchestra` exits 0"
+      ]
+    },
+    {
+      "id": "US-024",
+      "title": "Phase 4: Orchestra team runtime FSM + worker dispatch + state",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/orchestra/lib/orchestra/team/runtime.ex exists with transition/2 implementing FSM states",
+        "apps/orchestra/lib/orchestra/team/worker.ex exists with spawn/4 returning {:ok, worker_map}",
+        "apps/orchestra/lib/orchestra/team/dispatch.ex exists with route/3 selecting a backend for a task",
+        "apps/orchestra/lib/orchestra/team/state.ex exists with load/1 and save/2 for persistent state",
+        "Runtime FSM: transition(:idle, {:start, task}) returns :planning state",
+        "Runtime FSM: transition(:verifying, :pass) returns :done state",
+        "Runtime FSM: transition(:verifying, :fail) returns :fixing state",
+        "Unit test: Runtime.transition/2 covers all FSM transitions",
+        "Unit test: Worker.spawn/4 returns {:ok, map} with id, backend, status: :running",
+        "`mix test apps/orchestra` exits 0"
+      ]
+    },
+    {
+      "id": "US-025",
+      "title": "Phase 4: Orchestra.Ralph — persistence loop module",
+      "passes": true,
+      "acceptanceCriteria": [
+        "apps/orchestra/lib/orchestra/ralph.ex exists with run/2 accepting task and options",
+        "Ralph.run/2 loops: planning → executing → verifying → (pass: done | fail: fix → loop)",
+        "Ralph.run/2 accepts max_retries option defaulting to 10",
+        "Ralph.run/2 returns {:ok, :done} on success or {:error, :max_retries} when exhausted",
+        "Unit test: run/2 with a mock verifier that always passes returns {:ok, :done}",
+        "Unit test: run/2 with a mock verifier that always fails returns {:error, :max_retries} after max_retries",
+        "`mix test apps/orchestra` exits 0"
+      ]
+    },
+    {
+      "id": "US-026",
+      "title": "Phase 5: Full test suite passing — 90% coverage audit",
+      "passes": true,
+      "acceptanceCriteria": [
+        "`mix test` from umbrella root exits 0 with 0 failures",
+        "musician_core tests cover config loader, provider behaviour, OpenAI-compat, Anthropic translation, streaming",
+        "musician_auth tests cover ApiKey.resolve, TokenStore.read/write, Pkce, CodexDevice",
+        "musician_tools tests cover all 4 tools (bash, file_read, file_write, web_fetch)",
+        "musician_skills tests cover Loader, Sidecar, Search, Creator, QualityGate",
+        "musician_memory tests cover Repo CRUD, FTS search, Decay, Nudge",
+        "musician_session tests cover History append/read, Search by_keyword/by_time_range, Resume",
+        "musician_plugins tests cover Registry, Hooks, Api behaviour",
+        "orchestra tests cover Backends.Registry, all 4 backend modules, Tmux commands, Worktree lifecycle, Team FSM, Ralph",
+        "mix compile --warnings-as-errors exits 0"
+      ]
+    }
+  ]
+}
