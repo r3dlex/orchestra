@@ -7,7 +7,7 @@ defmodule MusicianCore.Provider.OpenAICompat do
   @behaviour MusicianCore.Provider.Behaviour
 
   alias MusicianCore.Config.Schema.ProviderConfig
-  alias MusicianCore.Provider.{Request, Response}
+  alias MusicianCore.Provider.{Request, Response, SSEParser}
 
   @impl true
   def name, do: "openai_compat"
@@ -42,12 +42,37 @@ defmodule MusicianCore.Provider.OpenAICompat do
     headers = build_headers(config)
     body = Request.to_map(%{request | stream: true})
 
-    # Return a stream of parsed SSE chunk maps
+    parent = self()
+    ref = make_ref()
+
+    Task.start(fn ->
+      Req.post(url,
+        json: body,
+        headers: headers,
+        into: fn {:data, chunk}, {req, resp} ->
+          send(parent, {ref, {:data, chunk}})
+          {:cont, {req, resp}}
+        end,
+        receive_timeout: 30_000
+      )
+      send(parent, {ref, :done})
+    end)
+
     stream =
       Stream.resource(
-        fn -> start_stream(url, headers, body) end,
-        &next_chunk/1,
-        &cleanup_stream/1
+        fn -> ref end,
+        fn ref ->
+          receive do
+            {^ref, {:data, chunk}} ->
+              {SSEParser.parse_chunk(chunk), ref}
+
+            {^ref, :done} ->
+              {:halt, ref}
+          after
+            30_000 -> {:halt, ref}
+          end
+        end,
+        fn _ref -> :ok end
       )
 
     {:ok, stream}
@@ -68,8 +93,6 @@ defmodule MusicianCore.Provider.OpenAICompat do
   @impl true
   def supports_tools?, do: true
 
-  # --- Private ---
-
   defp build_headers(%ProviderConfig{api_key_env: nil}), do: []
 
   defp build_headers(%ProviderConfig{api_key_env: env_var}) do
@@ -84,8 +107,4 @@ defmodule MusicianCore.Provider.OpenAICompat do
     end
   end
 
-  # Stream resource callbacks — minimal implementation for now
-  defp start_stream(url, headers, body), do: {url, headers, body, []}
-  defp next_chunk({_url, _headers, _body, []}), do: {:halt, nil}
-  defp cleanup_stream(_), do: :ok
 end

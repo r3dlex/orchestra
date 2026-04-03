@@ -46,6 +46,8 @@ artifacts/
 
 # OMC runtime state (not project config)
 .omc/state/
+.omc/sessions/
+.omc/project-memory.json
 
 # Environment / secrets
 .env

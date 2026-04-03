@@ -9,8 +9,8 @@ defmodule MusicianAuth.CodexDevice do
   4. exchange_device_code/1 — exchange a known device_code for tokens directly
   """
 
-  @token_url "https://auth.openai.com/oauth/token"
-  @device_code_url "https://auth.openai.com/oauth/device/code"
+  @token_url "https://auth0.openai.com/oauth/token"
+  @device_code_url "https://auth0.openai.com/oauth/device/code"
   @client_id "app_EMoamEEZ73f0CkXaXp7hrann"
 
   def request_device_code do

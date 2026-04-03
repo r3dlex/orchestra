@@ -23,7 +23,8 @@ defmodule MusicianAuth.MixProject do
   defp deps do
     [
       {:yaml_elixir, "~> 2.9"},
-      {:req, "~> 0.5"}
+      {:req, "~> 0.5"},
+      {:musician_core, in_umbrella: true}
     ]
   end
 end
