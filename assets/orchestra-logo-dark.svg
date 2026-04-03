@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0f35"/>
+      <stop offset="100%" style="stop-color:#2d1500"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a78bfa"/>
+      <stop offset="100%" style="stop-color:#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="center-node" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e879f9"/>
+      <stop offset="100%" style="stop-color:#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="outer-node" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a78bfa"/>
+      <stop offset="100%" style="stop-color:#22d3ee"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft-glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="96" ry="96" fill="url(#bg)"/>
+  <g opacity="0.08" stroke="#fbbf24" stroke-width="1" fill="none">
+    <polygon points="256,60 296,82 296,126 256,148 216,126 216,82"/>
+    <polygon points="256,148 296,170 296,214 256,236 216,214 216,170"/>
+    <polygon points="170,104 210,126 210,170 170,192 130,170 130,126"/>
+    <polygon points="342,104 382,126 382,170 342,192 302,170 302,126"/>
+    <polygon points="170,280 210,302 210,346 170,368 130,346 130,302"/>
+    <polygon points="342,280 382,302 382,346 342,368 302,346 302,302"/>
+  </g>
+  <g stroke="url(#edge)" stroke-width="3" opacity="0.8" filter="url(#soft-glow)">
+    <line x1="256" y1="256" x2="256" y2="148"/>
+    <line x1="256" y1="256" x2="340" y2="206"/>
+    <line x1="256" y1="256" x2="340" y2="306"/>
+    <line x1="256" y1="256" x2="256" y2="364"/>
+    <line x1="256" y1="256" x2="172" y2="306"/>
+    <line x1="256" y1="256" x2="172" y2="206"/>
+    <line x1="256" y1="148" x2="340" y2="206"/>
+    <line x1="340" y1="206" x2="340" y2="306"/>
+    <line x1="340" y1="306" x2="256" y2="364"/>
+    <line x1="256" y1="364" x2="172" y2="306"/>
+    <line x1="172" y1="306" x2="172" y2="206"/>
+    <line x1="172" y1="206" x2="256" y2="148"/>
+  </g>
+  <circle cx="256" cy="256" r="115" fill="none" stroke="#a78bfa" stroke-width="1" opacity="0.4"/>
+  <g filter="url(#glow)">
+    <circle cx="256" cy="148" r="22" fill="url(#outer-node)"/>
+    <circle cx="256" cy="148" r="14" fill="#1a0f35"/>
+    <circle cx="256" cy="148" r="7" fill="#22d3ee"/>
+    <circle cx="340" cy="206" r="22" fill="url(#outer-node)"/>
+    <circle cx="340" cy="206" r="14" fill="#1a0f35"/>
+    <circle cx="340" cy="206" r="7" fill="#a78bfa"/>
+    <circle cx="340" cy="306" r="22" fill="url(#outer-node)"/>
+    <circle cx="340" cy="306" r="14" fill="#1a0f35"/>
+    <circle cx="340" cy="306" r="7" fill="#22d3ee"/>
+    <circle cx="256" cy="364" r="22" fill="url(#outer-node)"/>
+    <circle cx="256" cy="364" r="14" fill="#1a0f35"/>
+    <circle cx="256" cy="364" r="7" fill="#a78bfa"/>
+    <circle cx="172" cy="306" r="22" fill="url(#outer-node)"/>
+    <circle cx="172" cy="306" r="14" fill="#1a0f35"/>
+    <circle cx="172" cy="306" r="7" fill="#22d3ee"/>
+    <circle cx="172" cy="206" r="22" fill="url(#outer-node)"/>
+    <circle cx="172" cy="206" r="14" fill="#1a0f35"/>
+    <circle cx="172" cy="206" r="7" fill="#fbbf24"/>
+  </g>
+  <circle cx="256" cy="256" r="36" fill="url(#center-node)" filter="url(#glow)"/>
+  <circle cx="256" cy="256" r="24" fill="#1a0f35"/>
+  <circle cx="256" cy="256" r="12" fill="url(#center-node)"/>
+  <line x1="256" y1="256" x2="310" y2="176" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" opacity="0.9" filter="url(#soft-glow)"/>
+  <circle cx="314" cy="170" r="6" fill="#fbbf24" filter="url(#soft-glow)"/>
+  <circle cx="96" cy="96" r="6" fill="#e879f9" opacity="0.6" filter="url(#soft-glow)"/>
+  <circle cx="416" cy="96" r="4" fill="#fbbf24" opacity="0.5"/>
+  <circle cx="416" cy="416" r="6" fill="#22d3ee" opacity="0.6" filter="url(#soft-glow)"/>
+  <circle cx="96" cy="416" r="4" fill="#a78bfa" opacity="0.5"/>
+</svg>

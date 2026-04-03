@@ -40,6 +40,27 @@ Tags used:
 - `:provider_e2e` — any real-API test
 - `:codex_e2e` — Codex device flow specifically (requires `CODEX_E2E=true`)
 
+## Running Specific Test Tags
+
+```sh
+# Run all provider E2E tests (requires relevant API keys in env)
+MINIMAX_API_KEY=sk-cp-... mix test --only provider_e2e
+
+# Run only Codex E2E tests
+CODEX_E2E=true mix test --only codex_e2e
+
+# Run a single app's E2E tests
+MINIMAX_API_KEY=sk-cp-... mix test apps/musician_core --only provider_e2e
+
+# Run all unit tests excluding E2E (default behaviour)
+mix test
+
+# Run tests for a specific app only
+mix test apps/orchestra
+```
+
+Tags are declared at module level with `@moduletag :provider_e2e` (or `:codex_e2e`). ExUnit excludes them by default via `ExUnit.configure(exclude: [:provider_e2e, :codex_e2e])` in `test_helper.exs`. Passing `--only <tag>` overrides the exclusion and runs only that tag.
+
 ## E2E Test Conventions
 
 1. `async: false` — E2E tests are sequential (shared Finch pool)

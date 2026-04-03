@@ -1,81 +1,94 @@
 {
   "version": "2.0",
-  "title": "Musician + Orchestra — E2E Integration Tests (MiniMax + Codex)",
-  "description": "Expand E2E and integration test coverage using MiniMax API and Codex device flow. Implement real SSE streaming.",
+  "title": "Musician + Orchestra — Brand Refresh, Sales README, Logos",
+  "description": "Update all *.md files, improve specs, create SVG logos, make README.md sales-oriented, integrate logos across repo and GitHub.",
   "stories": [
     {
-      "id": "US-001", "title": "Phases 1-5 baseline", "passes": true,
-      "acceptanceCriteria": ["172 tests, 0 failures across all 10 apps"]
-    },
-    {
-      "id": "US-027",
-      "title": "MiniMax multi-turn conversation E2E",
+      "id": "US-101",
+      "title": "Sales-oriented README.md",
       "passes": true,
       "acceptanceCriteria": [
-        "apps/musician_core/test/musician_core/provider/minimax_multiturn_e2e_test.exs exists",
-        "Test sends a 2-message conversation (user + assistant + user) to MiniMax API",
-        "Test asserts {:ok, response} with non-empty content",
-        "Test is tagged @moduletag :provider_e2e and skips inline when MINIMAX_API_KEY is not set",
-        "MINIMAX_API_KEY set: test exits 0 with 1 test passing",
-        "MINIMAX_API_KEY unset: test exits 0 trivially"
+        "README.md opens with a compelling tagline and logo",
+        "Includes a feature comparison table with visual checkmarks",
+        "Has a clear 'Why Musician?' value proposition section",
+        "Shows provider logos/badges or provider list prominently",
+        "Has a Quick Start section with copy-pasteable commands",
+        "Includes a status badge (build, tests) or equivalent",
+        "Has a roadmap or 'What's Next' teaser section",
+        "Tone is energetic and product-forward, not documentation-forward"
       ]
     },
     {
-      "id": "US-028",
-      "title": "MiniMax list_models E2E",
+      "id": "US-102",
+      "title": "Update AGENTS.md and MUSICIAN.md",
       "passes": true,
       "acceptanceCriteria": [
-        "apps/musician_core/test/musician_core/provider/minimax_models_e2e_test.exs exists",
-        "Test calls OpenAICompat.list_models/1 with MiniMax config",
-        "Test asserts {:ok, models} where models is a list (may be empty list on free tier)",
-        "Test handles {:error, {:api_error, 404, _}} gracefully (endpoint may not exist on free tier)",
-        "Test is tagged @moduletag :provider_e2e and skips inline when MINIMAX_API_KEY is not set",
-        "Test exits 0 with MINIMAX_API_KEY set"
+        "AGENTS.md has a clear two-section structure: Musician project + claude-code reference",
+        "AGENTS.md Quick Start commands are accurate (mix test shows 184 tests)",
+        "MUSICIAN.md is concise, up to date with Phases 1-5 complete",
+        "MUSICIAN.md references the new spec files (musician-architecture, providers, testing)",
+        "No stale content (old test counts, wrong phase status)"
       ]
     },
     {
-      "id": "US-029",
-      "title": "Real SSE streaming implementation + MiniMax streaming E2E",
+      "id": "US-103",
+      "title": "Improve musician spec files",
       "passes": true,
       "acceptanceCriteria": [
-        "apps/musician_core/lib/musician_core/provider/openai_compat.ex stream/2 uses Req streaming (not a stub that immediately halts)",
-        "stream/2 parses SSE data lines: splits on \\n\\n, extracts data: prefix, skips [DONE]",
-        "stream/2 returns {:ok, stream} where stream is an Elixir Stream of parsed chunk maps",
-        "Unit test: stream/2 with mocked SSE response returns stream emitting parsed chunks",
-        "Unit test covers: data line parsing, [DONE] termination, empty line skipping",
-        "apps/musician_core/test/musician_core/provider/minimax_streaming_e2e_test.exs exists",
-        "E2E test calls OpenAICompat.stream/2 with MiniMax config and collects at least 1 chunk",
-        "E2E test is tagged @moduletag :provider_e2e and skips inline when MINIMAX_API_KEY is not set",
-        "`mix test apps/musician_core` exits 0"
+        "spec/musician-architecture.md has an accurate dependency graph and is readable",
+        "spec/musician-providers.md documents all 5 providers with accurate details",
+        "spec/musician-testing.md shows 184 test count and complete E2E strategy",
+        "All three spec files have consistent formatting and tone",
+        "spec/ index (referenced from AGENTS.md) lists all musician specs"
       ]
     },
     {
-      "id": "US-030",
-      "title": "Codex device flow live integration test",
+      "id": "US-104",
+      "title": "Create Musician SVG logo",
       "passes": true,
       "acceptanceCriteria": [
-        "apps/musician_auth/test/musician_auth/codex_device_integration_test.exs exists",
-        "Test calls CodexDevice.request_device_code/0 against real https://auth.openai.com/oauth/device/code endpoint",
-        "Test asserts {:ok, %{device_code: dc, user_code: uc, verification_uri: uri, expires_in: exp, interval: iv}} where all fields are non-nil",
-        "Test prints the user_code and verification_uri to stdout so user can authorize",
-        "Test is tagged @moduletag :provider_e2e and @moduletag :codex_e2e",
-        "Test skips inline when CODEX_E2E env var is not set to 'true'",
-        "Test also verifies exchange_device_code/1 with the device_code returns {:error, :pending} (not yet authorized)",
-        "`mix test apps/musician_auth` exits 0 (test skips when CODEX_E2E != true)"
+        "assets/musician-logo.svg exists and is valid SVG",
+        "Logo is distinctive: music + terminal/CLI theme, funky/modern aesthetic",
+        "Works at 32x32 (favicon) and 512x512 (avatar) scales (scalable vector)",
+        "Uses a bold color palette (not plain black/white)",
+        "assets/musician-logo-dark.svg exists for dark backgrounds",
+        "SVG file is self-contained (no external font dependencies)"
       ]
     },
     {
-      "id": "US-031",
-      "title": "Codex token-based completion E2E (conditional)",
+      "id": "US-105",
+      "title": "Create Orchestra SVG logo",
       "passes": true,
       "acceptanceCriteria": [
-        "apps/musician_auth/test/musician_auth/codex_completion_e2e_test.exs exists",
-        "Test reads ~/.musician/auth/codex.yaml via TokenStore.read/1",
-        "Test skips inline when codex.yaml does not exist or access_token is nil",
-        "When tokens present: test calls OpenAICompat.complete/2 with codex endpoint and token",
-        "When tokens present: asserts {:ok, response} with non-empty content",
-        "Test is tagged @moduletag :provider_e2e",
-        "`mix test apps/musician_auth` exits 0"
+        "assets/orchestra-logo.svg exists and is valid SVG",
+        "Logo conveys multi-agent orchestration (conductors, networks, or nodes theme)",
+        "Visually related to Musician logo (shared design language)",
+        "Works at 32x32 and 512x512 scales",
+        "assets/orchestra-logo-dark.svg exists for dark backgrounds",
+        "SVG file is self-contained"
+      ]
+    },
+    {
+      "id": "US-106",
+      "title": "Integrate logos across repo docs",
+      "passes": true,
+      "acceptanceCriteria": [
+        "README.md shows the Musician logo prominently at the top",
+        "AGENTS.md references the logo",
+        "assets/ directory exists with all logo files",
+        "assets/favicon.svg exists (32x32 optimized version)",
+        "assets/github-avatar.svg exists (512x512 square, GitHub-optimized)"
+      ]
+    },
+    {
+      "id": "US-107",
+      "title": "GitHub branding setup guide",
+      "passes": true,
+      "acceptanceCriteria": [
+        "assets/README.md explains how to set GitHub avatar (manual steps)",
+        "assets/README.md explains how to add favicon to GitHub Pages (if applicable)",
+        "The github-avatar.svg is correctly sized at 500x500 or 512x512",
+        "Instructions mention: Settings > Profile > Change profile picture for org/user"
       ]
     }
   ]

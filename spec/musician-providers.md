@@ -84,9 +84,28 @@ Note: `auth0.openai.com` (not `auth.openai.com`). Automated HTTP clients receive
 
 Tokens stored at `~/.musician/auth/codex.yaml` via `TokenStore`.
 
+## Free-Tier Limitations
+
+**MiniMax free tier**: Non-streaming completions (`stream: false`) return HTTP 500 with body `"token plan not support model"`. The streaming endpoint works on all tiers. E2E tests account for this by matching `{:error, {:api_error, 500, _}}` for non-streaming calls and asserting `true`.
+
 ## Adding a New Provider
 
-1. Add a `ProviderConfig` preset in `musician_core/lib/musician_core/config/`
-2. If OpenAI-compat: just configure `api_base` and `model` — no new module needed
-3. If custom API: implement `MusicianCore.Provider.Behaviour` callbacks
-4. Add E2E test in `apps/musician_core/test/musician_core/provider/` tagged `@moduletag :provider_e2e`
+### OpenAI-compatible endpoint (most common)
+
+1. Add a preset map in `musician_core/lib/musician_core/config/presets.ex`:
+   ```elixir
+   "myprovider" => %ProviderConfig{
+     api_base: "https://api.myprovider.com/v1",
+     model: "my-model-id",
+     api_key_env: "MYPROVIDER_API_KEY"
+   }
+   ```
+2. No new module needed — `OpenAICompat` handles `/chat/completions` automatically.
+3. Add the provider name to the `@valid_providers` list in `Config.Schema`.
+4. Add an E2E test at `apps/musician_core/test/musician_core/provider/myprovider_e2e_test.exs` tagged `@moduletag :provider_e2e`. Follow the pattern in `minimax_e2e_test.exs`: start Finch, skip when env var absent, call `safe_call/1`.
+
+### Custom API (non-OpenAI shape)
+
+1. Create `apps/musician_core/lib/musician_core/provider/my_provider.ex` and implement all three `MusicianCore.Provider.Behaviour` callbacks: `complete/2`, `stream/2`, `list_models/1`.
+2. Add a preset as above, plus wire the module in `MusicianCore.Provider.router/1`.
+3. Follow the same E2E test conventions.

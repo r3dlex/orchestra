@@ -50,6 +50,7 @@ MINIMAX_API_KEY=sk-cp-... mix test --only provider_e2e
 │   ├── commands.md               # [ref] claude-code command system spec
 │   ├── state-management.md       # [ref] claude-code state management
 │   └── decompilation.md          # [ref] decompilation methodology
+├── assets/                    # Logo files
 ├── .archgate/adrs/            # Architecture Decision Records
 ├── artifacts/                 # CI-generated proof artifacts
 ├── src/                       # [READ ONLY] claude-code reference source (1,902 files)

@@ -1,52 +1,112 @@
-# musician + orchestra
+<div align="center">
+  <img src="assets/musician-logo.svg" width="200" alt="Musician + Orchestra" />
 
-**Musician** — a provider-agnostic interactive CLI for LLMs, built in Elixir.
-**Orchestra** — a multi-agent orchestration plugin on top of Musician.
+  # Musician + Orchestra
 
-## Status
+  **The provider-agnostic LLM CLI that grows with you.**
 
-**Phases 1-5 complete** — 184 tests, 0 failures.
+  Talk to any LLM. Automate with agents. Remember everything. Ship faster.
 
-Foundation, MiniMax streaming, multi-turn, auth (Device Code + PKCE), tools, skills, memory, session, TUI, and Orchestra plugin all ship.
+  ![Tests](https://img.shields.io/badge/tests-184%20passing-brightgreen)
+  ![Elixir](https://img.shields.io/badge/elixir-1.17%2B-purple)
+  ![OTP](https://img.shields.io/badge/OTP-26%2B-blue)
+  ![Status](https://img.shields.io/badge/phases%201--5-complete-success)
 
-## What Makes This Different
+</div>
 
-| Feature | Musician + Orchestra | oh-my-claudecode | Hermes-agent |
-|---------|---------------------|------------------|--------------|
-| Provider-agnostic | ✓ | ✗ (Claude only) | ✓ |
-| Self-improving skills | ✓ | ✗ | ✓ |
-| Persistent memory | ✓ | ✗ | ✓ |
-| Multi-agent orchestration | ✓ (via Orchestra) | ✓ | ✗ |
-| Zero-install binary | ✓ (Burrito) | ✗ | ✗ |
+---
+
+## Why Musician?
+
+Most LLM CLIs lock you into one provider, forget everything between sessions, and fall apart the moment you need more than a single chat window.
+
+Musician was built to fix that:
+
+- **No vendor lock-in.** Switch between Claude, Gemini, MiniMax, Codex, Ollama, or any OpenAI-compatible endpoint with a single config change. Your workflows, your muscle memory — all intact.
+- **It remembers.** Persistent memory backed by SQLite FTS5 means context survives across sessions. Stop re-explaining your project every time you open a new terminal.
+- **It gets smarter.** The SKILL.md engine lets Musician learn new capabilities from plain markdown files. Drop in a skill, and it's immediately available — no recompilation, no deploys.
+- **It orchestrates.** Orchestra ships as a first-class plugin, turning your single-agent CLI into a multi-agent system capable of parallel reasoning, delegation, and complex task decomposition.
+
+---
+
+## Feature Comparison
+
+| Feature | Musician + Orchestra | oh-my-claudecode | Raw LLM CLI tools |
+|---------|:--------------------:|:----------------:|:-----------------:|
+| Provider-agnostic | ✅ | ❌ Claude only | ⚠️ varies |
+| Multi-agent orchestration | ✅ via Orchestra | ✅ | ❌ |
+| Persistent memory (SQLite FTS5) | ✅ | ❌ | ❌ |
+| Self-improving skills (SKILL.md) | ✅ | ❌ | ❌ |
+| Zero-install binary (Burrito) | ✅ | ❌ | ⚠️ varies |
+| SSE streaming | ✅ | ✅ | ⚠️ varies |
+| Device Code + PKCE auth | ✅ | ❌ | ❌ |
+| Plugin system | ✅ | ⚠️ limited | ❌ |
+| Built in Elixir / OTP | ✅ | ❌ | ❌ |
+
+---
 
 ## Providers
 
-MiniMax · Claude · Codex · Gemini · Ollama · any OpenAI-compatible endpoint
+Connect to any of these out of the box:
+
+**MiniMax** · **Claude** · **Codex** · **Gemini** · **Ollama** · **any OpenAI-compatible endpoint**
+
+Auth flows supported: API key, Device Code (Codex), PKCE — all handled transparently.
+
+---
 
 ## Quick Start
 
 ```sh
+# Clone and install dependencies
+git clone https://github.com/your-org/orchestra.git && cd orchestra
 mix deps.get
-mix test        # 184 tests, 0 failures
-mix pipeline    # full CI
+
+# Run the full test suite (184 tests, 0 failures)
+mix test
+
+# Run the full CI pipeline
+mix pipeline
+
+# Build a zero-install binary (requires Zig 0.13.0)
+mix release
 ```
 
-Requires Elixir 1.17+, Erlang/OTP 26+. Zig 0.13.0 for binary builds.
+**Requirements:** Elixir 1.17+, Erlang/OTP 26+. Zig 0.13.0 for binary builds only.
+
+---
 
 ## Architecture
 
-See [AGENTS.md](AGENTS.md) for the full project context and agent guide, and [spec/](spec/) for detailed specifications.
+Musician is an Elixir umbrella application. Orchestra is a plugin that rides on top.
 
-Key specs:
+```
+musician/          # Core CLI — provider adapter, streaming, auth, TUI
+orchestra/         # Multi-agent orchestration plugin
+  └── agents/      # Agent definitions and coordination logic
+  └── skills/      # SKILL.md engine
+  └── memory/      # SQLite FTS5 persistent store
+```
+
+Full details:
+
+- [AGENTS.md](AGENTS.md) — Architecture guide and agent roles
 - [spec/musician-architecture.md](spec/musician-architecture.md) — Umbrella structure and core abstractions
 - [spec/musician-providers.md](spec/musician-providers.md) — Provider system and SSE streaming
 - [spec/musician-testing.md](spec/musician-testing.md) — Testing strategy and E2E conventions
+- [.archgate/adrs/](.archgate/adrs/) — Architecture Decision Records
 
-ADRs at [.archgate/adrs/](.archgate/adrs/).
+---
 
-## Reference Source
+## What's Next
 
-The `src/`, `tests/`, and `data/` directories contain decompiled TypeScript source from `@anthropic-ai/claude-code` v2.1.88, used as reference material for implementation.
+- [ ] Phase 6: Web UI via Phoenix LiveView
+- [ ] Tool call sandboxing and approval flows
+- [ ] Provider cost tracking and budget guardrails
+- [ ] Distributed agent clusters over OTP distribution
+- [ ] Published Burrito binary releases
+
+---
 
 ## License
 

@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0533"/>
+      <stop offset="100%" style="stop-color:#0d1b4b"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c026d3"/>
+      <stop offset="50%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="note" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0abfc"/>
+      <stop offset="100%" style="stop-color:#67e8f9"/>
+    </linearGradient>
+    <filter id="glow-filter">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft-glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="512" height="512" rx="96" ry="96" fill="url(#bg)"/>
+
+  <!-- Subtle grid lines -->
+  <g opacity="0.08" stroke="#7c3aed" stroke-width="1">
+    <line x1="0" y1="128" x2="512" y2="128"/>
+    <line x1="0" y1="256" x2="512" y2="256"/>
+    <line x1="0" y1="384" x2="512" y2="384"/>
+    <line x1="128" y1="0" x2="128" y2="512"/>
+    <line x1="256" y1="0" x2="256" y2="512"/>
+    <line x1="384" y1="0" x2="384" y2="512"/>
+  </g>
+
+  <!-- Terminal prompt line at bottom -->
+  <g filter="url(#soft-glow)">
+    <rect x="64" y="388" width="384" height="2" rx="1" fill="#06b6d4" opacity="0.6"/>
+    <!-- Prompt -->
+    <text x="80" y="424" font-family="monospace" font-size="28" fill="#06b6d4" opacity="0.9" font-weight="bold">&gt;_</text>
+    <!-- Cursor blink bar -->
+    <rect x="124" y="406" width="16" height="26" rx="2" fill="#c026d3" opacity="0.9"/>
+  </g>
+
+  <!-- Music note — stem -->
+  <g filter="url(#glow-filter)">
+    <!-- Note stem -->
+    <rect x="278" y="118" width="14" height="180" rx="7" fill="url(#note)"/>
+    <!-- Flag 1 -->
+    <path d="M292 118 C350 140 360 170 330 195 C360 185 370 155 292 140 Z" fill="url(#note)"/>
+    <!-- Flag 2 -->
+    <path d="M292 148 C350 170 360 200 330 225 C360 215 370 185 292 170 Z" fill="url(#note)"/>
+    <!-- Note head -->
+    <ellipse cx="258" cy="298" rx="36" ry="26" transform="rotate(-20 258 298)" fill="url(#note)"/>
+    <!-- Inner cutout -->
+    <ellipse cx="258" cy="298" rx="18" ry="13" transform="rotate(-20 258 298)" fill="url(#bg)"/>
+  </g>
+
+  <!-- Glow orb behind note -->
+  <circle cx="258" cy="280" r="90" fill="#7c3aed" opacity="0.12"/>
+  <circle cx="258" cy="280" r="60" fill="#c026d3" opacity="0.08"/>
+
+  <!-- Top accent dots -->
+  <circle cx="160" cy="96" r="8" fill="#c026d3" opacity="0.7" filter="url(#soft-glow)"/>
+  <circle cx="192" cy="96" r="5" fill="#7c3aed" opacity="0.5"/>
+  <circle cx="216" cy="96" r="3" fill="#06b6d4" opacity="0.4"/>
+
+  <!-- Bottom right accent -->
+  <circle cx="400" cy="370" r="6" fill="#06b6d4" opacity="0.5" filter="url(#soft-glow)"/>
+  <circle cx="420" cy="355" r="4" fill="#c026d3" opacity="0.4"/>
+</svg>

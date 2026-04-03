@@ -22,12 +22,12 @@ apps/
 musician_cli
   └── musician_tui
         └── orchestra
-              └── musician_tools, musician_skills, musician_session, musician_memory
+              └── musician_plugins, musician_tools, musician_skills, musician_session, musician_memory
                     └── musician_auth
                           └── musician_core
 ```
 
-All apps share `musician_core` at the bottom. No circular deps.
+All apps share `musician_core` at the bottom. `musician_plugins` sits alongside the other middleware apps under `orchestra`. No circular deps.
 
 ## Core Abstractions
 
@@ -60,6 +60,33 @@ Config schema validated with `ProviderConfig` struct. `api_key_env` holds the en
 ### SSE Streaming (`musician_core`)
 
 `stream/2` in `OpenAICompat` uses `Req.post/2` with an `into:` callback and a background `Task` that sends chunks via message passing to a `Stream.resource`. Parsed by `SSEParser.parse_chunk/1` which splits on `\n\n`, filters `data:` lines, skips `[DONE]`.
+
+## SSE Streaming Architecture
+
+The streaming path uses a Task + Req + Stream pipeline:
+
+```
+caller
+  │  calls stream/2
+  ▼
+Task.start/1          ← spawns a background process
+  │  Req.post with into: callback
+  │    each HTTP chunk → send(parent, {ref, {:data, chunk}})
+  │  on finish        → send(parent, {ref, :done})
+  ▼
+Stream.resource/3     ← pulls from the mailbox
+  │  receive {^ref, {:data, chunk}} → SSEParser.parse_chunk/1 → [delta_text, ...]
+  │  receive {^ref, :done}          → halt
+  │  after 30_000                   → halt (timeout guard)
+  ▼
+caller receives Enumerable of decoded delta strings
+```
+
+Key properties:
+- The `Task` is unlinked from the caller; crashes do not propagate.
+- `30_000 ms` receive timeout in `Stream.resource` mirrors `Req`'s `receive_timeout`.
+- `SSEParser` is pure (no side effects), making it independently testable.
+- The same pattern is reused for every OpenAI-compat provider (MiniMax, Codex, Gemini, Ollama).
 
 ## Configuration
 

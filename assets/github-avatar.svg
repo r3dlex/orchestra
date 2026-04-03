@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0533"/>
+      <stop offset="100%" style="stop-color:#0d1b4b"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c026d3"/>
+      <stop offset="50%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="note" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0abfc"/>
+      <stop offset="100%" style="stop-color:#67e8f9"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#f59e0b"/>
+    </linearGradient>
+    <filter id="glow-filter">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft-glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="500" height="500" fill="url(#bg)"/>
+
+  <!-- Divider line -->
+  <line x1="250" y1="60" x2="250" y2="440" stroke="#7c3aed" stroke-width="1" opacity="0.3"/>
+
+  <!-- LEFT SIDE: Musician note -->
+  <g transform="translate(-20, 0)">
+    <!-- Glow orb -->
+    <circle cx="148" cy="240" r="80" fill="#7c3aed" opacity="0.1"/>
+    <!-- Stem -->
+    <rect x="168" y="120" width="12" height="150" rx="6" fill="url(#note)" filter="url(#glow-filter)"/>
+    <!-- Flags -->
+    <path d="M180 120 C228 138 236 162 210 184 C236 174 242 150 180 135 Z" fill="url(#note)" filter="url(#glow-filter)"/>
+    <path d="M180 148 C228 166 236 190 210 212 C236 202 242 178 180 163 Z" fill="url(#note)" filter="url(#glow-filter)"/>
+    <!-- Note head -->
+    <ellipse cx="150" cy="270" rx="32" ry="22" transform="rotate(-20 150 270)" fill="url(#note)" filter="url(#glow-filter)"/>
+    <ellipse cx="150" cy="270" rx="16" ry="11" transform="rotate(-20 150 270)" fill="url(#bg)"/>
+    <!-- Terminal prompt -->
+    <text x="76" y="390" font-family="monospace" font-size="26" fill="#06b6d4" opacity="0.9" font-weight="bold">&gt;_</text>
+    <rect x="122" y="374" width="14" height="22" rx="2" fill="#c026d3" opacity="0.9"/>
+  </g>
+
+  <!-- RIGHT SIDE: Orchestra nodes -->
+  <g transform="translate(20, 0)">
+    <!-- Connection lines -->
+    <g stroke="url(#edge)" stroke-width="2.5" opacity="0.7" filter="url(#soft-glow)">
+      <line x1="352" y1="250" x2="352" y2="165"/>
+      <line x1="352" y1="250" x2="420" y2="292"/>
+      <line x1="352" y1="250" x2="420" y2="208"/>
+      <line x1="352" y1="250" x2="352" y2="335"/>
+      <line x1="352" y1="250" x2="284" y2="292"/>
+      <line x1="352" y1="250" x2="284" y2="208"/>
+      <line x1="352" y1="165" x2="420" y2="208"/>
+      <line x1="420" y1="208" x2="420" y2="292"/>
+      <line x1="420" y1="292" x2="352" y2="335"/>
+      <line x1="352" y1="335" x2="284" y2="292"/>
+      <line x1="284" y1="292" x2="284" y2="208"/>
+      <line x1="284" y1="208" x2="352" y2="165"/>
+    </g>
+    <!-- Outer nodes -->
+    <g filter="url(#glow-filter)">
+      <circle cx="352" cy="165" r="18" fill="#7c3aed"/>
+      <circle cx="352" cy="165" r="10" fill="#0d1b4b"/>
+      <circle cx="352" cy="165" r="5" fill="#06b6d4"/>
+      <circle cx="420" cy="208" r="18" fill="#7c3aed"/>
+      <circle cx="420" cy="208" r="10" fill="#0d1b4b"/>
+      <circle cx="420" cy="208" r="5" fill="#7c3aed"/>
+      <circle cx="420" cy="292" r="18" fill="#7c3aed"/>
+      <circle cx="420" cy="292" r="10" fill="#0d1b4b"/>
+      <circle cx="420" cy="292" r="5" fill="#06b6d4"/>
+      <circle cx="352" cy="335" r="18" fill="#7c3aed"/>
+      <circle cx="352" cy="335" r="10" fill="#0d1b4b"/>
+      <circle cx="352" cy="335" r="5" fill="#7c3aed"/>
+      <circle cx="284" cy="292" r="18" fill="#7c3aed"/>
+      <circle cx="284" cy="292" r="10" fill="#0d1b4b"/>
+      <circle cx="284" cy="292" r="5" fill="#06b6d4"/>
+      <circle cx="284" cy="208" r="18" fill="#7c3aed"/>
+      <circle cx="284" cy="208" r="10" fill="#0d1b4b"/>
+      <circle cx="284" cy="208" r="5" fill="#f59e0b"/>
+    </g>
+    <!-- Center node -->
+    <circle cx="352" cy="250" r="28" fill="#f59e0b" opacity="0.2" filter="url(#glow-filter)"/>
+    <circle cx="352" cy="250" r="28" fill="#c026d3" filter="url(#glow-filter)"/>
+    <circle cx="352" cy="250" r="18" fill="#0d1b4b"/>
+    <circle cx="352" cy="250" r="9" fill="#f59e0b"/>
+    <!-- Baton -->
+    <line x1="352" y1="250" x2="396" y2="186" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" filter="url(#soft-glow)"/>
+    <circle cx="399" cy="182" r="5" fill="#f59e0b" filter="url(#soft-glow)"/>
+  </g>
+
+  <!-- Bottom labels -->
+  <text x="130" y="445" font-family="sans-serif" font-size="20" fill="#f0abfc" opacity="0.8" text-anchor="middle" font-weight="600">musician</text>
+  <text x="372" y="445" font-family="sans-serif" font-size="20" fill="#fbbf24" opacity="0.8" text-anchor="middle" font-weight="600">orchestra</text>
+</svg>

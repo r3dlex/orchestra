@@ -78,10 +78,18 @@ MIX_ENV=prod mix release musician
 - ARCH-008: Ratatouille for TUI
 - ARCH-015: Burrito for zero-install distribution
 
-## v1 Scope
+## Status
 
-Phase 1 (Weeks 1-4): Foundation + MiniMax streaming
-Phase 2 (Weeks 5-8): Multi-provider + tools
-Phase 3 (Weeks 9-12): Skills + memory + session
-Phase 4 (Weeks 13-16): Orchestra plugin (team + ralph)
-Phase 5 (Weeks 17-18): Ship v1.0.0
+All 5 phases complete. 184 tests passing, 0 failures. All 10 apps functional.
+
+- Phase 1: Foundation + MiniMax streaming
+- Phase 2: Multi-provider + tools
+- Phase 3: Skills + memory + session
+- Phase 4: Orchestra plugin (team + ralph)
+- Phase 5: Ship v1.0.0
+
+## Spec References
+
+- **[spec/musician-architecture.md](spec/musician-architecture.md)** — Umbrella structure, dependency graph, core abstractions
+- **[spec/musician-providers.md](spec/musician-providers.md)** — Provider behaviour, OpenAI compat, SSE streaming, Codex device flow
+- **[spec/musician-testing.md](spec/musician-testing.md)** — Unit + E2E testing strategy, conventions, known free-tier quirks

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0533"/>
+      <stop offset="100%" style="stop-color:#0d1b4b"/>
+    </linearGradient>
+    <linearGradient id="note" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0abfc"/>
+      <stop offset="100%" style="stop-color:#67e8f9"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="6" ry="6" fill="url(#bg)"/>
+  <!-- Stem -->
+  <rect x="17" y="7" width="2" height="13" rx="1" fill="url(#note)"/>
+  <!-- Flag -->
+  <path d="M19 7 C23 9 23 12 21 13 C23 12 23 9 19 9 Z" fill="url(#note)"/>
+  <!-- Note head -->
+  <ellipse cx="15.5" cy="20" rx="3.5" ry="2.5" transform="rotate(-18 15.5 20)" fill="url(#note)"/>
+  <!-- Terminal prompt -->
+  <text x="4" y="29" font-family="monospace" font-size="6" fill="#06b6d4" font-weight="bold">&gt;_</text>
+</svg>
