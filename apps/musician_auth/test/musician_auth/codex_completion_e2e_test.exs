@@ -42,9 +42,11 @@ defmodule MusicianAuth.CodexCompletionE2ETest do
             assert response.content != nil
             assert String.length(response.content) > 0
             IO.puts("\n[Codex completion] #{response.content}")
+
           {:error, {:api_error, 401, _}} ->
             IO.puts("\n[info] Codex token expired — re-run device flow to refresh")
             assert true
+
           {:error, reason} ->
             flunk("Unexpected error: #{inspect(reason)}")
         end
@@ -52,7 +54,9 @@ defmodule MusicianAuth.CodexCompletionE2ETest do
         System.delete_env("CODEX_ACCESS_TOKEN")
 
       {:ok, tokens} ->
-        IO.puts("\n[skip] codex.yaml exists but has no access_token: #{inspect(Map.keys(tokens))}")
+        IO.puts(
+          "\n[skip] codex.yaml exists but has no access_token: #{inspect(Map.keys(tokens))}"
+        )
     end
   end
 end

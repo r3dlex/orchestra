@@ -10,7 +10,9 @@ defmodule MusicianMemory.Decay do
         {:ok, dt, _} ->
           age_days = DateTime.diff(DateTime.utc_now(), dt, :second) / 86_400
           age_days > @decay_days
-        _ -> false
+
+        _ ->
+          false
       end
     end
   end

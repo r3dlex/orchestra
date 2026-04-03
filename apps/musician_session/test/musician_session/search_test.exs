@@ -4,9 +4,24 @@ defmodule MusicianSession.SearchTest do
   alias MusicianSession.Search
 
   @sessions [
-    %{"session_id" => "s1", "timestamp" => "2026-01-01T10:00:00Z", "prompt_summary" => "debugged auth module", "provider" => "minimax"},
-    %{"session_id" => "s2", "timestamp" => "2026-02-15T10:00:00Z", "prompt_summary" => "refactored config loader", "provider" => "claude"},
-    %{"session_id" => "s3", "timestamp" => "2026-03-01T10:00:00Z", "prompt_summary" => "added minimax provider tests", "provider" => "minimax"}
+    %{
+      "session_id" => "s1",
+      "timestamp" => "2026-01-01T10:00:00Z",
+      "prompt_summary" => "debugged auth module",
+      "provider" => "minimax"
+    },
+    %{
+      "session_id" => "s2",
+      "timestamp" => "2026-02-15T10:00:00Z",
+      "prompt_summary" => "refactored config loader",
+      "provider" => "claude"
+    },
+    %{
+      "session_id" => "s3",
+      "timestamp" => "2026-03-01T10:00:00Z",
+      "prompt_summary" => "added minimax provider tests",
+      "provider" => "minimax"
+    }
   ]
 
   test "by_keyword/2 returns sessions matching keyword in prompt_summary" do

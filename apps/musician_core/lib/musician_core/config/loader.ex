@@ -83,14 +83,46 @@ defmodule MusicianCore.Config.Loader do
     {:ok, config}
   end
 
+  defp build_providers(raw_providers) when map_size(raw_providers) == 0 do
+    # No config file or no providers in config — use all presets
+    presets = Presets.all()
+    presets
+  end
+
   defp build_providers(raw_providers) do
     presets = Presets.all()
 
-    Map.new(raw_providers, fn {name, overrides} ->
+    Enum.map(raw_providers, fn {name, overrides} ->
       base = Map.get(presets, name, %ProviderConfig{api_base: "", model: ""})
       merged = apply_overrides(base, overrides)
-      {name, merged}
+
+      with :ok <- validate_provider(merged) do
+        {name, merged}
+      else
+        {:error, reason} -> raise "Invalid provider config for '#{name}': #{reason}"
+      end
     end)
+    |> Map.new()
+  end
+
+  defp validate_provider(%ProviderConfig{api_base: api_base, model: model}) do
+    errors = []
+
+    errors =
+      if is_binary(api_base) and api_base != "" do
+        errors
+      else
+        ["api_base must be a non-empty string" | errors]
+      end
+
+    errors =
+      if is_binary(model) and model != "" do
+        errors
+      else
+        ["model must be a non-empty string" | errors]
+      end
+
+    if errors == [], do: :ok, else: {:error, Enum.join(errors, ", ")}
   end
 
   defp apply_overrides(%ProviderConfig{} = base, overrides) when is_map(overrides) do

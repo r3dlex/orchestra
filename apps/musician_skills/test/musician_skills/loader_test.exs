@@ -8,6 +8,7 @@ defmodule MusicianSkills.LoaderTest do
 
   setup do
     File.mkdir_p!(@fixture_skill)
+
     skill_md = """
     ---
     name: test-skill
@@ -19,6 +20,7 @@ defmodule MusicianSkills.LoaderTest do
 
     When invoked, do the following steps.
     """
+
     File.write!(Path.join(@fixture_skill, "SKILL.md"), skill_md)
     on_exit(fn -> File.rm_rf(@fixture_dir) end)
     {:ok, skill_path: @fixture_skill}

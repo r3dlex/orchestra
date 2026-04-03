@@ -3,7 +3,8 @@ defmodule MusicianSession.HistoryTest do
 
   alias MusicianSession.History
 
-  @tmp_file System.tmp_dir!() |> Path.join("musician_session_test_#{:rand.uniform(100_000)}.jsonl")
+  @tmp_file System.tmp_dir!()
+            |> Path.join("musician_session_test_#{:rand.uniform(100_000)}.jsonl")
 
   setup do
     File.rm(@tmp_file)
@@ -23,6 +24,7 @@ defmodule MusicianSession.HistoryTest do
       tools_used: ["bash"],
       duration_seconds: 10
     }
+
     :ok = History.append(@tmp_file, entry)
     {:ok, entries} = History.read_all(@tmp_file)
     assert length(entries) == 1
@@ -31,8 +33,18 @@ defmodule MusicianSession.HistoryTest do
   end
 
   test "append/2 appends multiple entries" do
-    History.append(@tmp_file, %{session_id: "s1", timestamp: "2026-01-01T00:00:00Z", prompt_summary: "first"})
-    History.append(@tmp_file, %{session_id: "s2", timestamp: "2026-01-02T00:00:00Z", prompt_summary: "second"})
+    History.append(@tmp_file, %{
+      session_id: "s1",
+      timestamp: "2026-01-01T00:00:00Z",
+      prompt_summary: "first"
+    })
+
+    History.append(@tmp_file, %{
+      session_id: "s2",
+      timestamp: "2026-01-02T00:00:00Z",
+      prompt_summary: "second"
+    })
+
     {:ok, entries} = History.read_all(@tmp_file)
     assert length(entries) == 2
   end
@@ -43,8 +55,13 @@ defmodule MusicianSession.HistoryTest do
 
   test "prune/2 keeps only the most recent N entries" do
     for i <- 1..5 do
-      History.append(@tmp_file, %{session_id: "s#{i}", timestamp: "2026-01-0#{i}T00:00:00Z", prompt_summary: "entry #{i}"})
+      History.append(@tmp_file, %{
+        session_id: "s#{i}",
+        timestamp: "2026-01-0#{i}T00:00:00Z",
+        prompt_summary: "entry #{i}"
+      })
     end
+
     :ok = History.prune(@tmp_file, 3)
     {:ok, entries} = History.read_all(@tmp_file)
     assert length(entries) == 3

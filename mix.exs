@@ -12,12 +12,15 @@ defmodule Musician.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:credo, "~> 1.7", only: [:dev], runtime: false}
+    ]
   end
 
   defp aliases do
     [
-      test: "test --no-start"
+      test: "test --no-start",
+      pipeline: ["run -e 'MusicianCli.Mix.Tasks.Pipeline.run([])'"]
     ]
   end
 end

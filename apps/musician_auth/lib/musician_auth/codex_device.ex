@@ -21,13 +21,14 @@ defmodule MusicianAuth.CodexDevice do
 
     case Req.post(@device_code_url, json: body) do
       {:ok, %{status: 200, body: resp}} ->
-        {:ok, %{
-          device_code: resp["device_code"],
-          user_code: resp["user_code"],
-          verification_uri: resp["verification_uri"],
-          expires_in: resp["expires_in"],
-          interval: resp["interval"] || 5
-        }}
+        {:ok,
+         %{
+           device_code: resp["device_code"],
+           user_code: resp["user_code"],
+           verification_uri: resp["verification_uri"],
+           expires_in: resp["expires_in"],
+           interval: resp["interval"] || 5
+         }}
 
       {:ok, %{status: status, body: body}} ->
         {:error, {:api_error, status, body}}
@@ -53,6 +54,7 @@ defmodule MusicianAuth.CodexDevice do
           expires_in: resp["expires_in"],
           token_type: resp["token_type"]
         }
+
         {:ok, tokens}
 
       {:ok, %{status: 400, body: %{"error" => "authorization_pending"}}} ->

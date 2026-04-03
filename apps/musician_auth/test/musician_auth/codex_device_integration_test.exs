@@ -19,7 +19,8 @@ defmodule MusicianAuth.CodexDeviceIntegrationTest do
       result = CodexDevice.request_device_code()
 
       case result do
-        {:ok, %{device_code: dc, user_code: uc, verification_uri: uri, expires_in: exp, interval: iv}} ->
+        {:ok,
+         %{device_code: dc, user_code: uc, verification_uri: uri, expires_in: exp, interval: iv}} ->
           assert is_binary(dc) and byte_size(dc) > 0
           assert is_binary(uc) and byte_size(uc) > 0
           assert is_binary(uri) and String.starts_with?(uri, "https://")
@@ -35,16 +36,21 @@ defmodule MusicianAuth.CodexDeviceIntegrationTest do
             {:error, :pending} ->
               IO.puts("  Exchange status: pending (expected — not yet authorized)")
               assert true
+
             {:ok, tokens} ->
               IO.puts("  Exchange status: success! tokens obtained")
               assert is_map(tokens)
+
             {:error, other} ->
               IO.puts("  Exchange status: #{inspect(other)}")
               assert true
           end
 
         {:error, {:api_error, 403, _}} ->
-          IO.puts("\n[info] auth0.openai.com returned 403 — bot protection active in non-browser environment")
+          IO.puts(
+            "\n[info] auth0.openai.com returned 403 — bot protection active in non-browser environment"
+          )
+
           assert true
 
         {:error, reason} ->

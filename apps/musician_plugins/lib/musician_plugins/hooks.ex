@@ -14,6 +14,7 @@ defmodule MusicianPlugins.Hooks do
     hooks
     |> handlers_for(event)
     |> Enum.each(fn handler -> handler.(context) end)
+
     :ok
   end
 end

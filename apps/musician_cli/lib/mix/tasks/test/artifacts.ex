@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Test.Artifacts do
+defmodule MusicianCli.Mix.Tasks.Test.Artifacts do
   use Mix.Task
 
   @shortdoc "Generate CI proof artifacts"
@@ -9,7 +9,8 @@ defmodule Mix.Tasks.Test.Artifacts do
 
   @artifacts [
     {"Unit results", "mix test --exclude integration --exclude e2e", nil},
-    {"Coverage summary", "mix test --cover --exclude integration --exclude e2e", "artifacts/coverage-summary.txt"},
+    {"Coverage summary", "mix test --cover --exclude integration --exclude e2e",
+     "artifacts/coverage-summary.txt"},
     {"Auth: Codex", "mix test --only auth_codex", "artifacts/e2e/auth-flow-codex.log"},
     {"Provider: MiniMax", "mix test --only provider_e2e", "artifacts/e2e/provider-minimax.log"},
     {"Provider: Claude", "mix test --only claude_e2e", "artifacts/e2e/provider-claude.log"},

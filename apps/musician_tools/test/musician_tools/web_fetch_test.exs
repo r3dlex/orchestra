@@ -19,9 +19,11 @@ defmodule MusicianTools.WebFetchTest do
   test "execute/1 returns {:ok, body} for valid URL" do
     # Use a reliable test endpoint
     result = WebFetch.execute(%{url: "https://httpbin.org/get"})
+
     case result do
       {:ok, body} -> assert is_binary(body) and String.length(body) > 0
-      {:error, _} -> :ok  # Network may be unavailable in CI
+      # Network may be unavailable in CI
+      {:error, _} -> :ok
     end
   end
 

@@ -5,7 +5,10 @@ defmodule MusicianPlugins.RegistryTest do
 
   test "register/2 and lookup/2 round-trip a plugin" do
     registry = Registry.new()
-    registry = Registry.register(registry, :orchestra, %{module: Orchestra.Plugin, version: "1.0"})
+
+    registry =
+      Registry.register(registry, :orchestra, %{module: Orchestra.Plugin, version: "1.0"})
+
     assert {:ok, plugin} = Registry.lookup(registry, :orchestra)
     assert plugin.module == Orchestra.Plugin
   end

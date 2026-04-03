@@ -14,10 +14,12 @@ defmodule Orchestra.RalphTest do
 
   test "run/2 with a verifier that passes on 2nd attempt returns {:ok, :done}" do
     counter = :counters.new(1, [])
+
     verifier = fn _state ->
       :counters.add(counter, 1, 1)
       if :counters.get(counter, 1) >= 2, do: :pass, else: :fail
     end
+
     assert {:ok, :done} = Ralph.run("task", verifier: verifier, max_retries: 5)
   end
 end

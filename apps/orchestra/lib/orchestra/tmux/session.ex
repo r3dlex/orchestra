@@ -7,6 +7,7 @@ defmodule Orchestra.Tmux.Session do
     rescue
       ErlangError -> :ignored
     end
+
     name
   end
 
@@ -16,6 +17,7 @@ defmodule Orchestra.Tmux.Session do
     rescue
       ErlangError -> :ignored
     end
+
     :ok
   end
 end
