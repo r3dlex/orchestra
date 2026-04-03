@@ -81,6 +81,75 @@ make codex-login && make test-codex
 
 ---
 
+## Running Musician
+
+### Configuration
+
+Create `~/.musician/config.yaml`:
+
+```yaml
+provider: minimax
+providers:
+  minimax:
+    api_base: https://api.minimaxi.chat/v1
+    model: MiniMax-Text-01
+    api_key_env: MINIMAX_API_KEY
+  claude:
+    api_base: https://api.anthropic.com
+    model: claude-sonnet-4-20250514
+    api_key_env: ANTHROPIC_API_KEY
+```
+
+See [spec/musician-architecture.md](spec/musician-architecture.md) for the full config schema and all supported providers.
+
+### Interactive TUI
+
+```sh
+# Via IEx (recommended for development)
+cd orchestra
+mix deps.get
+iex -S mix
+iex> MusicianTui.start()
+
+# Or with a specific provider on the command line
+MIX_ENV=prod iex -S mix
+iex> MusicianTui.start()
+```
+
+The TUI starts the Orchestra plugin automatically. Once loaded, use `/orchestra` commands to interact with multi-agent features.
+
+### Non-Interactive / Single Prompt
+
+```sh
+# Set your API key
+export MINIMAX_API_KEY=sk-cp-...
+
+# Pipe a prompt through the CLI
+echo "Explain this codebase" | MIX_ENV=prod iex -S mix
+```
+
+### Orchestra Multi-Agent Commands
+
+Orchestra is a plugin — it loads on startup and registers `/orchestra` commands for multi-agent coordination:
+
+```sh
+/orchestra help        # Show available orchestra commands
+/orchestra team        # Team agent coordination
+/orchestra ralph      # Self-verification loop
+/orchestra tmux       # Tmux-based orchestration backend
+/orchestra worktree    # Isolated git worktree for agent tasks
+```
+
+See [spec/musician-architecture.md](spec/musician-architecture.md) for how Orchestra fits into the dependency tree.
+
+### One-Line Setup
+
+```sh
+git clone https://github.com/your-org/orchestra.git && cd orchestra && mix deps.get && iex -S mix
+```
+
+---
+
 ## Architecture
 
 Musician is an Elixir umbrella application. Orchestra is a plugin that rides on top.
