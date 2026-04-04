@@ -6,7 +6,7 @@ defmodule Orchestra.CommandsTest do
   test "list/0 returns a list of command definitions" do
     commands = Commands.list()
     assert is_list(commands)
-    assert commands != []
+    assert match?([_ | _], commands)
   end
 
   test "each command has a name and description" do

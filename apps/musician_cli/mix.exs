@@ -30,6 +30,7 @@ defmodule MusicianCli.MixProject do
       {:musician_core, in_umbrella: true},
       {:musician_auth, in_umbrella: true},
       {:musician_tools, in_umbrella: true},
+      {:musician_tui, in_umbrella: true},
       {:musician_plugins, in_umbrella: true},
       {:bypass, "~> 2.1", only: :test},
       {:meck, "~> 0.9", only: :test}

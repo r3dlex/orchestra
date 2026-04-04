@@ -57,8 +57,7 @@
     {
       "id": "US-205",
       "title": "Week 8: TUI multi-turn context + provider switching",
-      "passes": false,
-      "blockedBy": ["musician_tui App not yet implemented"],
+      "passes": true,
       "acceptanceCriteria": [
         "TUI model.ex maintains conversation history as list of messages",
         "Each user turn appends to history; each assistant turn appends to history",
@@ -66,7 +65,8 @@
         "/model <name> command switches model at runtime",
         "Status bar updates to reflect current provider and model",
         "Conversation history sent with each new request as messages list"
-      ]
+      ],
+      "notes": "Model.messages stores conversation history. submit_input appends user turns; {:add_message, role, content} appends assistant turns. /provider and /model commands update model.provider and model.model. StatusBar displays both. call_provider_streaming sends model.messages in Request struct."
     },
     {
       "id": "US-206",

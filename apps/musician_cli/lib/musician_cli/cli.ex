@@ -95,7 +95,10 @@ defmodule MusicianCli.Cli do
     end
   end
 
-  defp start_tui, do: IO.puts("TUI not yet implemented")
+  defp start_tui do
+    Application.ensure_all_started(:ratatouille)
+    Ratatouille.run(MusicianTui.App)
+  end
 
   defp print_help do
     IO.puts("""
