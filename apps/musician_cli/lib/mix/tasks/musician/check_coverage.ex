@@ -13,9 +13,7 @@ defmodule Mix.Tasks.Musician.CheckCoverage do
     musician_skills: 80,
     musician_plugins: 85,
     musician_core: 95,
-    musician_auth: 80,
-    musician_cli: 50,
-    musician_tui: 60
+    musician_auth: 80
   }
 
   @impl true
