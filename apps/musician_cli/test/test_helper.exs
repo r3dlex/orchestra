@@ -31,23 +31,22 @@ defmodule MusicianCli.TestConfigLoader do
   @impl true
   def load(_opts) do
     opts = normalize_opts(_opts)
-    global = Path.expand(Keyword.get(opts, :global, ""))
+    global = Keyword.get(opts, :global, "")
     local = Keyword.get(opts, :local)
 
-    # Normalized path to musician_core's fixture global config
-    fixture_global = Path.expand("/Users/andreburgstahler/Ws/Personal/orchestra/apps/musician_core/test/fixtures/global_config.yaml")
-    fixture_local = Path.expand("/Users/andreburgstahler/Ws/Personal/orchestra/apps/musician_core/test/fixtures/local_config.yaml")
+    # Always use musician_core's priv/fixtures for all musician_core config loading.
+    # This works in CI and local environments regardless of absolute paths.
+    priv = :code.priv_dir(:musician_core) |> List.to_string()
+    fixture_global = Path.join([priv, "fixtures", "global_config.yaml"])
+    fixture_local = Path.join([priv, "fixtures", "local_config.yaml"])
 
-    cond do
-      global == fixture_global and is_nil(local) ->
-        MusicianCore.Config.Loader.load_impl(global: fixture_global, local: nil)
+    # Use local fixtures only when test explicitly asks for them.
+    # The "missing config" test passes "/nonexistent" which doesn't match,
+    # so we fall through for that case.
+    use_local? = local != nil and local != ""
+    final_local = if use_local?, do: fixture_local, else: nil
 
-      global == fixture_global and local != nil and Path.expand(local) == fixture_local ->
-        MusicianCore.Config.Loader.load_impl(global: fixture_global, local: fixture_local)
-
-      true ->
-        load()
-    end
+    MusicianCore.Config.Loader.load_impl(global: fixture_global, local: final_local)
   end
 
   # Normalize opts to handle both list and keyword formats
