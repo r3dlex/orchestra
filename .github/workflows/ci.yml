@@ -30,7 +30,13 @@ jobs:
         run: mix deps.get
 
       - name: Run all tests
-        run: mix test
+        run: mix test --cover
+
+      - name: Generate coverage XML
+        run: mix test.coverage
+
+      - name: Check coverage thresholds
+        run: mix musician.check_coverage
 
   # --------------------------------------------------------------------------
   # Node.js: tests + archgate ADR check
