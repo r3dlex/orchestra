@@ -55,3 +55,4 @@ artifacts/
 .env.*.local
 
 claude_minimax.sh
+**/.omc/state/checkpoints/
