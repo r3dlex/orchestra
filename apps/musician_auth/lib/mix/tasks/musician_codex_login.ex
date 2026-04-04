@@ -22,8 +22,13 @@ defmodule Mix.Tasks.Musician.Codex.Login do
   def run(_args) do
     Application.ensure_all_started(:req)
 
-    {:ok, finch_pid} = Finch.start_link(name: Req.Finch)
-    Process.unlink(finch_pid)
+    case Finch.start_link(name: Req.Finch) do
+      {:ok, finch_pid} ->
+        Process.unlink(finch_pid)
+
+      {:error, {:already_started, finch_pid}} ->
+        Process.unlink(finch_pid)
+    end
 
     Mix.shell().info("Requesting Codex device code...")
 
