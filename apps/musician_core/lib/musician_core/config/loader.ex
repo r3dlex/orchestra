@@ -30,7 +30,10 @@ defmodule MusicianCore.Config.Loader do
   @spec load() :: {:ok, Schema.t()} | {:error, term()}
   def load do
     if override = test_override() do
-      apply_override(override)
+      case apply_override(override).([]) do
+        {:fall_through, _opts} -> load_impl()
+        result -> result
+      end
     else
       load_impl()
     end
@@ -49,14 +52,29 @@ defmodule MusicianCore.Config.Loader do
   end
 
   # Support two override formats:
-  #   1. Module (atom) — calls Module.load()
+  #   1. Module (atom) — calls Module.load(opts); if module unavailable or result is {:error, :fall_through}, uses real loader
   #   2. {Module, config} — calls Module.load([__config__: config])
   defp apply_override({module, config}) do
-    module.load(config: config)
+    fn _opts ->
+      if Code.ensure_loaded?(module) do
+        module.load(config: config)
+      else
+        {:error, :fall_through}
+      end
+    end
   end
 
   defp apply_override(module) when is_atom(module) do
-    module.load()
+    fn opts ->
+      if Code.ensure_loaded?(module) do
+        case module.load(opts) do
+          {:error, :fall_through} -> {:fall_through, opts}
+          result -> result
+        end
+      else
+        {:fall_through, opts}
+      end
+    end
   end
 
   @doc """
@@ -70,13 +88,16 @@ defmodule MusicianCore.Config.Loader do
   @spec load(keyword()) :: {:ok, Schema.t()} | {:error, term()}
   def load(opts) do
     if override = test_override() do
-      apply_override(override)
+      case apply_override(override).(opts) do
+        {:fall_through, opts} -> load_impl(opts)
+        result -> result
+      end
     else
       load_impl(opts)
     end
   end
 
-  defp load_impl(opts) do
+  def load_impl(opts) do
     global_path = Keyword.get(opts, :global, @global_config_path)
     local_path = Keyword.get(opts, :local, @local_config_path)
 
