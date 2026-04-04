@@ -1,15 +1,17 @@
 #!/bin/bash
 
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")/../.." && pwd)"
-MUSICIAN_CLI_DIR="$SCRIPT_DIR/apps/musician_cli"
-cd "$MUSICIAN_CLI_DIR"
+cd "$SCRIPT_DIR"
 
 APPS="musician_core musician_auth musician_tools musician_skills musician_memory musician_session musician_plugins orchestra"
+
+echo "Compiling all apps..."
+mix compile
 
 echo "Running tests with coverage..."
 for app in $APPS; do
   echo "  Testing $app..."
-  MIX_ENV=test mix test "../$app" --cover --export-coverage "$app"
+  MIX_ENV=test mix test "apps/$app" --cover --export-coverage "$app"
   EXIT=$?
   if [ $EXIT -ne 0 ]; then
     echo "  WARNING: $app tests failed (exit $EXIT), continuing..."
