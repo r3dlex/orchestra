@@ -29,8 +29,10 @@ jobs:
       - name: Install dependencies (excluding musician_tui — ratatouille→ex_termbox uses removed Python imp module)
         run: mix deps.get --exclude-apps musician_tui
 
-      - name: Remove broken ex_termbox (transitive dep from excluded musician_tui)
-        run: rm -rf deps/ex_termbox deps/ratatouille _build/MIX/@lib/musician_tui 2>/dev/null || true
+      - name: Remove broken transitive deps and update lock
+        run: |
+          rm -rf deps/ex_termbox deps/ratatouille _build/MIX/@lib/musician_tui 2>/dev/null || true
+          mix lock --remove ratatouille 2>/dev/null || true
 
       - name: Run tests with coverage and generate XML
         run: bash .github/workflows/gen-coverage.sh
