@@ -18,6 +18,7 @@ defmodule MusicianMemory.MixProject do
 
   def application do
     [
+      mod: {MusicianMemory.Application, []},
       extra_applications: [:logger, :crypto]
     ]
   end
