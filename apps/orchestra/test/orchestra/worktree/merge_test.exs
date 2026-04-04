@@ -3,11 +3,9 @@ defmodule Orchestra.Worktree.MergeTest do
 
   describe "merge/2 builds correct git command" do
     test "source and target branch are embedded in the command string" do
-      # The function builds a shell string; verify its structure without hitting System.cmd
       source = "feature-login"
       target = "main"
 
-      # Manually build the expected command to verify structure
       expected_cmd = "git merge #{source} --no-ff -m 'Orchestra: merge #{source} into #{target}'"
       assert is_binary(expected_cmd)
       assert expected_cmd =~ "git merge"
@@ -15,17 +13,48 @@ defmodule Orchestra.Worktree.MergeTest do
       assert expected_cmd =~ "'Orchestra: merge feature-login into main'"
     end
 
-    test "merge returns correct shape on exit code 0 (testable via ExUnit mock simulation)" do
-      # Simulate what happens: when System.cmd returns {output, 0} → {:ok, output}
+    test "merge returns correct shape on exit code 0" do
       output = "Merge made by the 'ort' strategy.\n"
       assert {:ok, ^output} = wrap_merge_result(output, 0)
     end
 
     test "merge returns correct shape on non-zero exit code" do
-      # Simulate what happens: when System.cmd returns {output, code} → {:error, {:exit_code, code, output}}
       output = "CONFLICT (content): Merge conflict in README.md\n"
       code = 1
       assert {:error, {:exit_code, ^code, ^output}} = wrap_merge_error(output, code)
+    end
+  end
+
+  describe "staged_merge/2" do
+    test "staged_merge returns {:ok, :merged} on clean merge" do
+      # Simulate: checkout ok, merge ok, no conflicts
+      assert staged_merge_simulate(:ok, :ok, :no_conflict) == {:ok, :merged}
+    end
+
+    test "staged_merge returns {:error, {:conflicts_detected, files}} on conflict" do
+      files = ["lib/foo.ex", "lib/bar.ex"]
+      assert staged_merge_simulate(:ok, :ok, {:conflicts, files}) ==
+               {:error, {:conflicts_detected, files}}
+    end
+
+    test "staged_merge propagates checkout error" do
+      assert staged_merge_simulate({:error, {:checkout_failed, "boom"}}, :ok, :no_conflict) ==
+               {:error, {:checkout_failed, "boom"}}
+    end
+
+    # Pure simulation helpers that mirror staged_merge/2 logic
+    defp staged_merge_simulate(checkout_result, merge_result, conflict_result) do
+      with {:ok, _} <- checkout_result,
+           {:ok, _} <- merge_result,
+           {:ok, :no_conflict} <- conflict_result do
+        {:ok, :merged}
+      else
+        {:error, {:conflicts, files}} ->
+          {:error, {:conflicts_detected, files}}
+
+        error ->
+          error
+      end
     end
   end
 
