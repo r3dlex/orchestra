@@ -26,6 +26,7 @@ jobs:
           otp-version: "27"
           elixir-version: "1.17"
 
+<<<<<<< HEAD
       - name: Install dependencies (excluding musician_tui — ratatouille→ex_termbox uses removed Python imp module)
         run: mix deps.get --exclude-apps musician_tui
 
@@ -33,6 +34,22 @@ jobs:
         run: |
           rm -rf deps/ex_termbox deps/ratatouille _build/MIX/@lib/musician_tui 2>/dev/null || true
           mix lock --remove ratatouille 2>/dev/null || true
+
+      - name: Run all tests (excluding musician_tui)
+        run: |
+          for app in musician_core musician_auth musician_tools musician_skills musician_memory musician_session musician_plugins orchestra; do
+            mix test apps/$app --cover || exit 1
+          done
+=======
+      - name: Install dependencies (exclude musician_tui — ratatouille/ex_termbox broken on Python 3.12+)
+        run: mix deps.get --exclude-apps musician_tui
+
+      - name: Run all tests (excluding musician_tui)
+        run: |
+          for app in musician_core musician_auth musician_tools musician_skills musician_memory musician_session musician_plugins orchestra; do
+            mix test apps/$app --cover || exit 1
+          done
+>>>>>>> 8ee8ddd (Fix CI: exclude musician_tui (ex_termbox incompatible with Python 3.12+))
 
       - name: Run tests with coverage and generate XML
         run: bash .github/workflows/gen-coverage.sh
