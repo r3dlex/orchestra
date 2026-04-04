@@ -22,7 +22,9 @@ defmodule MusicianTui.MixProject do
 
   defp deps do
     [
-      {:ratatouille, "~> 0.5"}
+      {:ratatouille, "~> 0.5"},
+      {:musician_core, in_umbrella: true},
+      {:musician_auth, in_umbrella: true}
     ]
   end
 end

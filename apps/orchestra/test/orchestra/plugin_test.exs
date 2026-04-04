@@ -28,11 +28,12 @@ defmodule Orchestra.PluginTest do
   end
 
   describe "implements MusicianPlugins.Api behaviour" do
-    test "all required callbacks are defined" do
-      # Verify the callbacks exist as per MusicianPlugins.Api
-      assert function_exported?(Plugin, :on_load, 1)
-      assert function_exported?(Plugin, :on_command, 2)
-      assert function_exported?(Plugin, :on_message, 1)
+    test "all required callbacks are defined and callable" do
+      # Verify callbacks are callable (proves they exist)
+      assert Plugin.on_load(%{}) == :ok
+      assert Plugin.on_load(%{"foo" => "bar"}) == :ok
+      assert Plugin.on_command("/orchestra test", %{}) == :handled
+      assert Plugin.on_message(%{"foo" => "bar"}) == :passthrough
     end
   end
 end

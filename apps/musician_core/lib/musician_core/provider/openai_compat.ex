@@ -133,7 +133,9 @@ defmodule MusicianCore.Provider.OpenAICompat do
   defp retry_after(headers) do
     raw =
       case headers do
-        %{} -> Map.get(headers, "retry-after")
+        %{} ->
+          Map.get(headers, "retry-after")
+
         list when is_list(list) ->
           case List.keyfind(list, "retry-after", 0) do
             nil -> nil

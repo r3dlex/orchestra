@@ -54,7 +54,10 @@ defmodule MusicianAuth.CodexCompletionE2ETest do
             assert true
 
           {:error, {:rate_limited, retry_after}} ->
-            IO.puts("\n[info] Codex API rate-limited (retry in #{retry_after}s) — token is valid but request was throttled")
+            IO.puts(
+              "\n[info] Codex API rate-limited (retry in #{retry_after}s) — token is valid but request was throttled"
+            )
+
             assert true
 
           {:error, reason} ->
