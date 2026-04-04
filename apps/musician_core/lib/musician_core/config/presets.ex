@@ -16,8 +16,8 @@ defmodule MusicianCore.Config.Presets do
         api_key_env: "ANTHROPIC_AUTH_TOKEN"
       },
       "claude" => %ProviderConfig{
-        api_base: "https://api.anthropic.com/v1",
-        model: "claude-sonnet-4-6",
+        api_base: "https://api.minimax.io/anthropic/v1",
+        model: "MiniMax-M2.7",
         api_key_env: "ANTHROPIC_API_KEY",
         native: true
       },

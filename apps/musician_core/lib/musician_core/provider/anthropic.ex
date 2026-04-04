@@ -168,10 +168,12 @@ defmodule MusicianCore.Provider.Anthropic do
   @spec translate_response(map()) :: Response.t()
   def translate_response(body) when is_map(body) do
     content =
-      case Map.get(body, "content", []) do
-        [%{"type" => "text", "text" => text} | _] -> text
-        _ -> nil
-      end
+      body
+      |> Map.get("content", [])
+      |> Enum.find_value(nil, fn
+        %{"type" => "text", "text" => text} -> text
+        _ -> false
+      end)
 
     %Response{
       id: Map.get(body, "id"),

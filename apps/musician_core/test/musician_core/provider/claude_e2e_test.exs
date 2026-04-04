@@ -5,7 +5,7 @@ defmodule MusicianCore.Provider.ClaudeE2ETest do
   @moduletag :claude_e2e
 
   alias MusicianCore.Provider.Anthropic
-  alias MusicianCore.Config.Schema.ProviderConfig
+  alias MusicianCore.Config.Presets
   alias MusicianCore.Provider.Request
   import MusicianCore.E2EHelpers
 
@@ -17,14 +17,11 @@ defmodule MusicianCore.Provider.ClaudeE2ETest do
     if is_nil(key) or key == "" do
       IO.puts("\n[skip] ANTHROPIC_API_KEY not set — skipping E2E test")
     else
-      config = %ProviderConfig{
-        api_base: "https://api.anthropic.com/v1",
-        model: "claude-sonnet-4-6",
-        api_key_env: "ANTHROPIC_API_KEY"
-      }
+      # Use preset which has the correct api_base (MiniMax Anthropic proxy) and model
+      config = Presets.get("claude")
 
       request = %Request{
-        model: "claude-sonnet-4-6",
+        model: config.model,
         messages: [%{"role" => "user", "content" => "Say hello in one word."}],
         stream: false,
         temperature: 0.0
@@ -60,14 +57,10 @@ defmodule MusicianCore.Provider.ClaudeE2ETest do
     if is_nil(key) or key == "" do
       IO.puts("\n[skip] ANTHROPIC_API_KEY not set")
     else
-      config = %ProviderConfig{
-        api_base: "https://api.anthropic.com/v1",
-        model: "claude-sonnet-4-6",
-        api_key_env: "ANTHROPIC_API_KEY"
-      }
+      config = Presets.get("claude")
 
       request = %Request{
-        model: "claude-sonnet-4-6",
+        model: config.model,
         messages: [%{"role" => "user", "content" => "Say hi in one word."}],
         stream: true,
         temperature: 0.0

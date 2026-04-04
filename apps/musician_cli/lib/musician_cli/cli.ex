@@ -33,6 +33,10 @@ defmodule MusicianCli.Cli do
           {:error, :unknown_provider, name} ->
             IO.puts("Error: unknown provider '#{name}'")
             System.halt(1)
+
+          other ->
+            IO.puts("\n[Error: unexpected result: #{inspect(other)}]")
+            System.halt(1)
         end
 
       true ->
@@ -86,6 +90,8 @@ defmodule MusicianCli.Cli do
       if output_file do
         IO.puts("\n[Response written to #{output_file}]")
       end
+
+      :ok
     end
   end
 
