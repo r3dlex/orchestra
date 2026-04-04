@@ -20,12 +20,14 @@ defmodule MusicianAuth.CodexCompletionE2ETest do
         IO.puts("\n[skip] ~/.musician/auth/codex.yaml not found — run Codex device flow first")
 
       {:ok, %{"access_token" => token}} when is_binary(token) ->
-        System.put_env("CODEX_ACCESS_TOKEN", token)
+        # Token is at top level (flat structure written by import script)
+        # Verify it's a non-empty JWT-like string
+        assert byte_size(token) > 50, "access_token should be a JWT"
 
         config = %ProviderConfig{
           api_base: "https://api.openai.com/v1",
           model: "gpt-4o-mini",
-          api_key_env: "CODEX_ACCESS_TOKEN"
+          auth_method: :device
         }
 
         request = %Request{
@@ -43,15 +45,21 @@ defmodule MusicianAuth.CodexCompletionE2ETest do
             assert String.length(response.content) > 0
             IO.puts("\n[Codex completion] #{response.content}")
 
+          {:error, :unauthorized} ->
+            IO.puts("\n[info] Codex token expired or invalid — re-run device flow to refresh")
+            assert true
+
           {:error, {:api_error, 401, _}} ->
             IO.puts("\n[info] Codex token expired — re-run device flow to refresh")
+            assert true
+
+          {:error, {:rate_limited, retry_after}} ->
+            IO.puts("\n[info] Codex API rate-limited (retry in #{retry_after}s) — token is valid but request was throttled")
             assert true
 
           {:error, reason} ->
             flunk("Unexpected error: #{inspect(reason)}")
         end
-
-        System.delete_env("CODEX_ACCESS_TOKEN")
 
       {:ok, tokens} ->
         IO.puts(

@@ -131,9 +131,20 @@ defmodule MusicianCore.Provider.OpenAICompat do
   end
 
   defp retry_after(headers) do
-    case List.keyfind(headers, "retry-after", 0) do
-      {_, value} -> String.to_integer(value)
+    raw =
+      case headers do
+        %{} -> Map.get(headers, "retry-after")
+        list when is_list(list) ->
+          case List.keyfind(list, "retry-after", 0) do
+            nil -> nil
+            tuple -> elem(tuple, 1)
+          end
+      end
+
+    case raw do
       nil -> 60
+      val when is_binary(val) -> String.to_integer(val)
+      [val | _] when is_binary(val) -> String.to_integer(val)
     end
   end
 end
