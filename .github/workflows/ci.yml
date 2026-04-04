@@ -12,6 +12,27 @@ concurrency:
 
 jobs:
   # --------------------------------------------------------------------------
+  # Elixir / Mix: all umbrella apps
+  # --------------------------------------------------------------------------
+  elixir:
+    name: Elixir tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: "27"
+          elixir-version: "1.17"
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Run all tests
+        run: mix test
+
+  # --------------------------------------------------------------------------
   # Node.js: tests + archgate ADR check
   # --------------------------------------------------------------------------
   node:
@@ -68,17 +89,18 @@ jobs:
         run: poetry run pytest --tb=short
 
   # --------------------------------------------------------------------------
-  # Gate: require both jobs to pass
+  # Gate: require all jobs to pass
   # --------------------------------------------------------------------------
   status:
     name: All checks passed
     runs-on: ubuntu-latest
     if: always()
-    needs: [node, python]
+    needs: [elixir, node, python]
     steps:
       - name: Check results
         run: |
-          if [[ "${{ needs.node.result }}" != "success" ]] || \
+          if [[ "${{ needs.elixir.result }}" != "success" ]] || \
+             [[ "${{ needs.node.result }}" != "success" ]] || \
              [[ "${{ needs.python.result }}" != "success" ]]; then
             echo "::error::One or more jobs failed"
             exit 1
