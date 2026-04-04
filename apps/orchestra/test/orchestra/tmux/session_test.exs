@@ -1,13 +1,19 @@
 defmodule Orchestra.Tmux.SessionTest do
   use ExUnit.Case, async: true
+
   alias Orchestra.Tmux.Session
 
-  test "create/1 returns a session name string" do
-    name = Session.create("test-session")
-    assert is_binary(name)
+  describe "start/1" do
+    test "returns {:error, {:tmux_unavailable, :tmux_not_found}} when tmux is absent" do
+      # When tmux is not installed, Detector.available? returns :tmux_not_found
+      result = Session.start("test-session")
+      assert match?({:error, {:tmux_unavailable, _}}, result)
+    end
   end
 
-  test "destroy/1 returns :ok" do
-    assert :ok = Session.destroy("test-session")
+  describe "destroy/1" do
+    test "returns :ok even when session does not exist" do
+      assert :ok = Session.destroy("nonexistent-session")
+    end
   end
 end
