@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd apps/musician_core && mix test --cover 2>&1 | tail -10\",\"timeout\":60000,\"description\":\"Check musician_core coverage in its own directory\"}",
+  "error": "Exit code 1\n(eval):cd:1: no such file or directory: apps/musician_core",
+  "timestamp": "2026-04-03T22:00:29.866Z",
+  "retry_count": 1
+}

@@ -1,4 +1,6 @@
 defmodule MusicianCli.Cli do
+  alias MusicianCore.Provider.Anthropic
+
   @moduledoc """
   CLI entrypoint. Parses arguments and dispatches to subcommands.
   """
@@ -20,9 +22,21 @@ defmodule MusicianCli.Cli do
     {opts, remaining, _invalid} = OptionParser.parse(args, switches: @switches, aliases: @aliases)
 
     cond do
-      opts[:help] -> print_help()
-      opts[:prompt] -> run_prompt(opts)
-      true -> dispatch(remaining, opts)
+      opts[:help] ->
+        print_help()
+
+      opts[:prompt] ->
+        case run_prompt(opts) do
+          :ok ->
+            :ok
+
+          {:error, :unknown_provider, name} ->
+            IO.puts("Error: unknown provider '#{name}'")
+            System.halt(1)
+        end
+
+      true ->
+        dispatch(remaining, opts)
     end
   end
 
@@ -40,39 +54,38 @@ defmodule MusicianCli.Cli do
     provider_config = Map.get(config.providers, provider_name)
 
     if is_nil(provider_config) do
-      IO.puts("Error: unknown provider '#{provider_name}'")
-      System.halt(1)
-    end
+      {:error, :unknown_provider, provider_name}
+    else
+      # Build request
+      prompt_text = opts[:prompt] || ""
+      messages = [%{role: "user", content: prompt_text}]
 
-    # Build request
-    prompt_text = opts[:prompt] || ""
-    messages = [%{role: "user", content: prompt_text}]
+      request = %MusicianCore.Provider.Request{
+        model: provider_config.model,
+        messages: messages,
+        stream: true
+      }
 
-    request = %MusicianCore.Provider.Request{
-      model: provider_config.model,
-      messages: messages,
-      stream: true
-    }
-
-    # Execute streaming request
-    case MusicianCore.Provider.OpenAICompat.stream(provider_config, request) do
-      {:ok, stream} ->
-        output_file = opts[:output_file]
-
-        stream
-        |> Stream.each(fn chunk ->
-          content = get_in(chunk, ["choices", Access.at(0), "delta", "content"]) || ""
-          IO.write(content)
-        end)
-        |> Stream.run()
-
-        if output_file do
-          IO.puts("\n[Response written to #{output_file}]")
+      # Execute streaming request — route based on provider native flag
+      {:ok, stream} =
+        if provider_config.native do
+          Anthropic.stream(provider_config, request)
+        else
+          MusicianCore.Provider.OpenAICompat.stream(provider_config, request)
         end
 
-      {:error, reason} ->
-        IO.puts("Error: #{inspect(reason)}")
-        System.halt(1)
+      output_file = opts[:output_file]
+
+      stream
+      |> Stream.each(fn chunk ->
+        content = get_in(chunk, ["choices", Access.at(0), "delta", "content"]) || ""
+        IO.write(content)
+      end)
+      |> Stream.run()
+
+      if output_file do
+        IO.puts("\n[Response written to #{output_file}]")
+      end
     end
   end
 

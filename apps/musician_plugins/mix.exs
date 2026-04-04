@@ -12,7 +12,7 @@ defmodule MusicianPlugins.MixProject do
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      test_coverage: []
+      test_coverage: [threshold: 85]
     ]
   end
 

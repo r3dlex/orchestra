@@ -4,20 +4,25 @@ defmodule MusicianAuth.TokenStore do
   Token files are YAML format.
   """
 
-  @auth_dir "~/.musician/auth"
+  @default_auth_dir "~/.musician/auth"
 
   @doc """
   Reads a token file by name (without extension).
   Returns {:ok, map()} or {:error, :not_found | :parse_error}.
+
+  ## Options
+
+    * `:dir` — overrides the default auth directory (useful in tests).
 
   ## Examples
 
       MusicianAuth.TokenStore.read("codex")
       # => {:ok, %{"auth_mode" => "device", "tokens" => %{...}}}
   """
-  @spec read(String.t()) :: {:ok, map()} | {:error, :not_found | :parse_error}
-  def read(name) do
-    path = token_path(name)
+  @spec read(String.t(), keyword()) :: {:ok, map()} | {:error, :not_found | :parse_error}
+  def read(name, opts \\ []) do
+    auth_dir = Keyword.get(opts, :dir, @default_auth_dir)
+    path = token_path(name, auth_dir)
 
     case File.read(path) do
       {:ok, content} ->
@@ -36,10 +41,11 @@ defmodule MusicianAuth.TokenStore do
   Creates the directory if it doesn't exist.
   Returns :ok or {:error, reason}.
   """
-  @spec write(String.t(), map()) :: :ok | {:error, term()}
-  def write(name, tokens) when is_map(tokens) do
-    dir = Path.expand(@auth_dir)
-    path = token_path(name)
+  @spec write(String.t(), map(), keyword()) :: :ok | {:error, term()}
+  def write(name, tokens, opts \\ []) when is_map(tokens) do
+    auth_dir = Keyword.get(opts, :dir, @default_auth_dir)
+    dir = Path.expand(auth_dir)
+    path = token_path(name, auth_dir)
 
     with :ok <- File.mkdir_p(dir),
          yaml <- map_to_yaml(tokens),
@@ -51,7 +57,11 @@ defmodule MusicianAuth.TokenStore do
   @doc "Returns the full path for a token file."
   @spec token_path(String.t()) :: String.t()
   def token_path(name) do
-    Path.join([Path.expand(@auth_dir), "#{name}.yaml"])
+    token_path(name, @default_auth_dir)
+  end
+
+  defp token_path(name, auth_dir) do
+    Path.join([Path.expand(auth_dir), "#{name}.yaml"])
   end
 
   # Minimal YAML serializer — for simple flat/nested maps with string values

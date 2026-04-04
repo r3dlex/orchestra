@@ -12,7 +12,8 @@ defmodule MusicianCli.MixProject do
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      releases: releases()
+      releases: releases(),
+      test_coverage: [threshold: 50]
     ]
   end
 
@@ -29,7 +30,9 @@ defmodule MusicianCli.MixProject do
       {:musician_core, in_umbrella: true},
       {:musician_auth, in_umbrella: true},
       {:musician_tools, in_umbrella: true},
-      {:musician_plugins, in_umbrella: true}
+      {:musician_plugins, in_umbrella: true},
+      {:bypass, "~> 2.1", only: :test},
+      {:meck, "~> 0.9", only: :test}
     ]
   end
 

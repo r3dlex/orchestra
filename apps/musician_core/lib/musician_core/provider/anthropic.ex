@@ -7,7 +7,7 @@ defmodule MusicianCore.Provider.Anthropic do
   @behaviour MusicianCore.Provider.Behaviour
 
   alias MusicianCore.Config.Schema.ProviderConfig
-  alias MusicianCore.Provider.{Request, Response}
+  alias MusicianCore.Provider.{Request, Response, SSEParser}
 
   @anthropic_version "2023-06-01"
 
@@ -39,9 +39,56 @@ defmodule MusicianCore.Provider.Anthropic do
   end
 
   @impl true
-  def stream(%ProviderConfig{} = _config, %Request{} = _request) do
-    # Streaming implementation deferred — returns empty stream for now
-    {:ok, Stream.resource(fn -> nil end, fn _ -> {:halt, nil} end, fn _ -> :ok end)}
+  @spec stream(ProviderConfig.t(), Request.t()) :: {:ok, Enumerable.t()} | {:error, term()}
+  def stream(%ProviderConfig{} = config, %Request{} = request) do
+    url = "#{config.api_base}/messages"
+    headers = build_headers(config)
+    body = translate_request(request) |> Map.put("stream", true)
+
+    parent = self()
+    ref = make_ref()
+
+    Task.start(fn ->
+      case Req.post(url,
+             json: body,
+             headers: headers,
+             into: fn {:data, chunk}, {req, resp} ->
+               send(parent, {ref, {:data, chunk}})
+               {:cont, {req, resp}}
+             end,
+             receive_timeout: 30_000
+           ) do
+        {:ok, _resp} -> send(parent, {ref, :done})
+        {:error, reason} -> send(parent, {ref, {:error, reason}})
+      end
+    end)
+
+    stream =
+      Stream.resource(
+        fn -> ref end,
+        fn ref ->
+          receive do
+            {^ref, {:data, chunk}} ->
+              chunks =
+                SSEParser.parse_chunk(chunk)
+                |> Enum.map(&translate_sse_event/1)
+                |> Enum.reject(&is_nil/1)
+
+              {chunks, ref}
+
+            {^ref, {:error, reason}} ->
+              throw({:stream_error, reason})
+
+            {^ref, :done} ->
+              {:halt, ref}
+          after
+            30_000 -> {:halt, ref}
+          end
+        end,
+        fn _ref -> :ok end
+      )
+
+    {:ok, stream}
   end
 
   @impl true
@@ -115,7 +162,11 @@ defmodule MusicianCore.Provider.Anthropic do
     Map.put(map, "tools", anthropic_tools)
   end
 
-  defp translate_response(body) when is_map(body) do
+  @doc """
+  Translates an Anthropic Messages API response body to a MusicianCore.Response.
+  """
+  @spec translate_response(map()) :: Response.t()
+  def translate_response(body) when is_map(body) do
     content =
       case Map.get(body, "content", []) do
         [%{"type" => "text", "text" => text} | _] -> text
@@ -139,4 +190,29 @@ defmodule MusicianCore.Provider.Anthropic do
       total_tokens: Map.get(usage, "input_tokens", 0) + Map.get(usage, "output_tokens", 0)
     }
   end
+
+  # Translates an Anthropic SSE event map to OpenAI-compatible streaming format
+  # so the CLI's get_in(chunk, ["choices", Access.at(0), "delta", "content"])
+  # works without changes.
+  @spec translate_sse_event(map()) :: map() | nil
+  defp translate_sse_event(%{
+         "type" => "content_block_delta",
+         "index" => index,
+         "delta" => %{"type" => "text_delta", "text" => text}
+       }) do
+    %{"choices" => [%{"index" => index, "delta" => %{"content" => text}}]}
+  end
+
+  defp translate_sse_event(%{
+         "type" => "message_delta",
+         "delta" => %{"stop_reason" => reason}
+       }) do
+    %{"choices" => [%{"finish_reason" => reason}]}
+  end
+
+  defp translate_sse_event(%{"type" => "message_start", "message" => message}) do
+    %{"id" => Map.get(message, "id"), "choices" => [%{"index" => 0, "delta" => %{}}]}
+  end
+
+  defp translate_sse_event(_), do: nil
 end

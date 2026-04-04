@@ -6,7 +6,16 @@ defmodule MusicianCore.Config.Loader do
   1. Built-in defaults
   2. Global config: ~/.musician/config.yaml
   3. Local config: .musician/config.yaml (relative to cwd)
+
+  ## Test overrides
+
+  In the `:test` Mix environment, set the `MUSICIAN_TEST_CONFIG_LOADER` env var
+  to a module name (e.g. `MyApp.TestLoader`) that implements the
+  `MusicianCore.Config.Loader.Behaviour`. The module must define a `load/0`
+  function returning `{:ok, %Schema{}}`. When set, `load/0` delegates to that
+  module instead of the real file-based loader.
   """
+  @behaviour MusicianCore.Config.Loader.Behaviour
 
   alias MusicianCore.Config.{Schema, Presets}
   alias Schema.{ProviderConfig, MemoryConfig, SkillsConfig, SessionConfig, TuiConfig}
@@ -20,15 +29,54 @@ defmodule MusicianCore.Config.Loader do
   """
   @spec load() :: {:ok, Schema.t()} | {:error, term()}
   def load do
+    if override = test_override() do
+      apply_override(override)
+    else
+      load_impl()
+    end
+  end
+
+  # Internal file-based implementation — called by load/0 in non-test environments,
+  # or when no test override is set.
+  defp load_impl do
     load(global: @global_config_path, local: @local_config_path)
+  end
+
+  defp test_override do
+    if Mix.env() == :test do
+      Application.get_env(:musician_core, :test_config_loader)
+    end
+  end
+
+  # Support two override formats:
+  #   1. Module (atom) — calls Module.load()
+  #   2. {Module, config} — calls Module.load([__config__: config])
+  defp apply_override({module, config}) do
+    module.load(config: config)
+  end
+
+  defp apply_override(module) when is_atom(module) do
+    module.load()
   end
 
   @doc """
   Loads config from explicit paths.
   Options: `global:` and/or `local:` paths (strings or nil to skip).
+
+  In the `:test` environment, if a test override is registered via
+  `Application.put_env(:musician_core, :test_config_loader, module)`, the
+  override's `load/1` is called instead of the file-based loader.
   """
   @spec load(keyword()) :: {:ok, Schema.t()} | {:error, term()}
   def load(opts) do
+    if override = test_override() do
+      apply_override(override)
+    else
+      load_impl(opts)
+    end
+  end
+
+  defp load_impl(opts) do
     global_path = Keyword.get(opts, :global, @global_config_path)
     local_path = Keyword.get(opts, :local, @local_config_path)
 

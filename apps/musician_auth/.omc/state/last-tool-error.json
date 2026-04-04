@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cat /Users/andreburgstahler/Ws/Personal/orchestra/apps/musician_cli/lib/cli.ex\"}",
+  "error": "Exit code 1\ncat: /Users/andreburgstahler/Ws/Personal/orchestra/apps/musician_cli/lib/cli.ex: No such file or directory",
+  "timestamp": "2026-04-03T19:48:46.732Z",
+  "retry_count": 1
+}

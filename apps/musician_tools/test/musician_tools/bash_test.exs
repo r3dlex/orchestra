@@ -18,7 +18,7 @@ defmodule MusicianTools.BashTest do
 
   test "execute/1 runs a simple command and returns output" do
     assert {:ok, output} = Bash.execute(%{command: "echo hello"})
-    assert String.contains?(output, "hello")
+    assert String.contains?(output.out, "hello")
   end
 
   test "execute/1 returns {:error, reason} for invalid command" do

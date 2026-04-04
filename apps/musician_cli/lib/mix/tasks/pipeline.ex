@@ -21,8 +21,8 @@ defmodule MusicianCli.Mix.Tasks.Pipeline do
     {"Format", "mix format --check-formatted"},
     {"Compile", "mix compile"},
     {"Credo", "(mix credo; exit 0)"},
-    {"Unit tests", "mix test --exclude integration --exclude e2e"},
-    {"Integration", "mix test --include integration"},
+    {"Unit tests", "mix test --exclude integration --exclude e2e --no-start"},
+    {"Integration", "mix test --include integration --no-start"},
     {"Artifacts",
      "cd apps/musician_cli && mix run -e 'MusicianCli.Mix.Tasks.Test.Artifacts.run([])'"}
   ]

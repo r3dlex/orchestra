@@ -12,14 +12,15 @@ defmodule MusicianCore.MixProject do
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      test_coverage: [],
+      test_coverage: [threshold: 95],
       elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {MusicianCore.Application, []}
     ]
   end
 
@@ -28,6 +29,7 @@ defmodule MusicianCore.MixProject do
 
   defp deps do
     [
+      {:musician_auth, in_umbrella: true},
       {:yaml_elixir, "~> 2.9"},
       {:req, "~> 0.5"},
       {:jason, "~> 1.4"},

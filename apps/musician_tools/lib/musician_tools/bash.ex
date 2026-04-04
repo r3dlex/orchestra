@@ -12,8 +12,8 @@ defmodule MusicianTools.Bash do
 
   def execute(%{command: command}) do
     case System.cmd("sh", ["-c", command], stderr_to_stdout: true) do
-      {output, 0} -> {:ok, output}
-      {output, code} -> {:error, {:exit_code, code, output}}
+      {output, 0} -> {:ok, %{out: output, err: "", exit_code: 0}}
+      {output, code} -> {:ok, %{out: "", err: output, exit_code: code}}
     end
   end
 end

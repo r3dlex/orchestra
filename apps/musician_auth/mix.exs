@@ -12,7 +12,7 @@ defmodule MusicianAuth.MixProject do
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      test_coverage: []
+      test_coverage: [threshold: 90]
     ]
   end
 
@@ -24,7 +24,9 @@ defmodule MusicianAuth.MixProject do
     [
       {:yaml_elixir, "~> 2.9"},
       {:req, "~> 0.5"},
-      {:musician_core, in_umbrella: true}
+      {:meck, "~> 0.9", only: :test},
+      {:bypass, "~> 2.1", only: :test},
+      {:plug, "~> 1.0", only: :test}
     ]
   end
 end

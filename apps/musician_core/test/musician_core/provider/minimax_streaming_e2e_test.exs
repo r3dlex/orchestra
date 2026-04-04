@@ -31,7 +31,7 @@ defmodule MusicianCore.Provider.MiniMaxStreamingE2ETest do
       {:ok, stream} = OpenAICompat.stream(config, request)
       chunks = Enum.to_list(stream)
       IO.puts("\n[MiniMax streaming] #{length(chunks)} chunks received")
-      assert length(chunks) >= 1
+      assert chunks != []
     end
   end
 end

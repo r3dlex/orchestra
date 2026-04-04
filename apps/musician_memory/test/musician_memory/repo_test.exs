@@ -46,7 +46,7 @@ defmodule MusicianMemory.RepoTest do
     })
 
     {:ok, results} = Repo.search(db, "Elixir")
-    assert length(results) >= 1
+    assert results != []
     assert Enum.any?(results, &String.contains?(&1["body"], "Elixir"))
   end
 

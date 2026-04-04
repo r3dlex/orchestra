@@ -9,9 +9,14 @@ defmodule MusicianAuth.CodexDevice do
   4. exchange_device_code/1 — exchange a known device_code for tokens directly
   """
 
-  @token_url "https://auth0.openai.com/oauth/token"
-  @device_code_url "https://auth0.openai.com/oauth/device/code"
+  @token_url_default "https://auth0.openai.com/oauth/token"
+  @device_code_url_default "https://auth0.openai.com/oauth/device/code"
   @client_id "app_EMoamEEZ73f0CkXaXp7hrann"
+
+  defp token_url, do: Application.get_env(:musician_auth, :token_url, @token_url_default)
+
+  defp device_code_url,
+    do: Application.get_env(:musician_auth, :device_code_url, @device_code_url_default)
 
   def request_device_code do
     body = %{
@@ -19,7 +24,7 @@ defmodule MusicianAuth.CodexDevice do
       scope: "openid profile email offline_access"
     }
 
-    case Req.post(@device_code_url, json: body) do
+    case Req.post(device_code_url(), json: body) do
       {:ok, %{status: 200, body: resp}} ->
         {:ok,
          %{
@@ -45,7 +50,7 @@ defmodule MusicianAuth.CodexDevice do
       device_code: device_code
     }
 
-    case Req.post(@token_url, json: body) do
+    case Req.post(token_url(), json: body) do
       {:ok, %{status: 200, body: resp}} ->
         tokens = %{
           access_token: resp["access_token"],
