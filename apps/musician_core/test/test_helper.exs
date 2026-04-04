@@ -15,9 +15,10 @@ defmodule MusicianCore.TestConfigLoader do
   end
 
   defp fixture_path(name) do
-    # Use Application.app_dir to get the musician_core app root directory.
-    # This works in all contexts including umbrella builds and CI environments.
-    Path.join([Application.app_dir(:musician_core), "test", "fixtures", name])
+    # Use :code.priv_dir to find musician_core's priv directory.
+    # This is the standard way to access runtime assets for an OTP app.
+    priv = :code.priv_dir(:musician_core) |> List.to_string()
+    Path.join([priv, "fixtures", name])
   end
 end
 
