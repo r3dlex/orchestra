@@ -10,9 +10,9 @@ defmodule Orchestra.Tmux.DetectorTest do
       # We can't easily mock System.find_executable, so we test the version parsing
       # logic by checking that parse_version works correctly
       assert Detector.available?() in [
-               {:ok, _, _},
+               {:ok, _path, _version},
                {:error, {:tmux_unavailable, :tmux_not_found}},
-               {:error, {:tmux_unavailable, {:tmux_too_old, _}}}
+               {:error, {:tmux_unavailable, {:tmux_too_old, _old_version}}}
              ]
     end
   end
