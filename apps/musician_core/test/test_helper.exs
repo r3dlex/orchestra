@@ -5,17 +5,11 @@ ExUnit.start()
 defmodule MusicianCore.TestConfigLoader do
   @moduledoc "Loads fixture-based config for musician_core tests."
 
-  # Use __DIR__ to locate fixtures relative to test_helper.exs location.
-  # This works whether tests run from musician_core's own context or
-  # from musician_cli umbrella context in CI.
-  @fixture_dir Path.join([__DIR__, "fixtures"])
-  @fixture_global Path.join(@fixture_dir, "global_config.yaml")
-  @fixture_local Path.join(@fixture_dir, "local_config.yaml")
+  # Always delegate to load_impl with the test fixtures.
+  # __DIR__ resolves at compile time to the test_helper.exs directory.
+  @fixture_global Path.join([__DIR__, "fixtures", "global_config.yaml"])
+  @fixture_local Path.join([__DIR__, "fixtures", "local_config.yaml"])
 
-  # Loads config based on opts:
-  #   - global fixture path + no local → global fixture only
-  #   - global fixture path + local fixture path → merged global+local fixtures
-  #   - anything else → {:error, :fall_through} to use real loader
   def load(opts) do
     global = Keyword.get(opts, :global)
     local = Keyword.get(opts, :local)
