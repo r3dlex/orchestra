@@ -30,10 +30,10 @@ jobs:
         run: mix deps.get
 
       - name: Run all tests
-        run: mix test
+        run: mix test --cover
 
-      - name: Run all tests with coverage
-        run: mix test.all
+      - name: Generate coverage XML
+        run: mix test.coverage
 
       - name: Check coverage thresholds
         run: mix musician.check_coverage
