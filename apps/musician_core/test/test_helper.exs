@@ -4,35 +4,28 @@ ExUnit.start()
 # Registered after module definition below.
 defmodule MusicianCore.TestConfigLoader do
   @moduledoc "Loads fixture-based config for musician_core tests."
-  alias MusicianCore.Config.Schema
 
+  # Use __DIR__ to locate fixtures relative to test_helper.exs location.
+  # This works whether tests run from musician_core's own context or
+  # from musician_cli umbrella context in CI.
   @fixture_dir Path.join([__DIR__, "fixtures"])
+  @fixture_global Path.join(@fixture_dir, "global_config.yaml")
+  @fixture_local Path.join(@fixture_dir, "local_config.yaml")
 
   # Loads config based on opts:
   #   - global fixture path + no local → global fixture only
   #   - global fixture path + local fixture path → merged global+local fixtures
-  #   - anything else (e.g. "/nonexistent/") → {:error, :fall_through} to use real loader
+  #   - anything else → {:error, :fall_through} to use real loader
   def load(opts) do
     global = Keyword.get(opts, :global)
     local = Keyword.get(opts, :local)
 
-    # Fixture dir must match musician_core's test/fixtures regardless of which
-    # umbrella app's test context is running (musician_core vs musician_cli).
-    # Use :musician_core app's priv_dir as anchor.
-    fixture_dir =
-      :musician_core
-      |> :code.priv_dir()
-      |> Path.join("fixtures")
-
-    fixture_global = Path.join(fixture_dir, "global_config.yaml")
-    fixture_local = Path.join(fixture_dir, "local_config.yaml")
-
     cond do
-      global == fixture_global and is_nil(local) ->
-        MusicianCore.Config.Loader.load_impl(global: fixture_global, local: nil)
+      global == @fixture_global and is_nil(local) ->
+        MusicianCore.Config.Loader.load_impl(global: @fixture_global, local: nil)
 
-      global == fixture_global and local == fixture_local ->
-        MusicianCore.Config.Loader.load_impl(global: fixture_global, local: fixture_local)
+      global == @fixture_global and local == @fixture_local ->
+        MusicianCore.Config.Loader.load_impl(global: @fixture_global, local: @fixture_local)
 
       true ->
         {:error, :fall_through}
