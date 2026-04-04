@@ -62,4 +62,33 @@ defmodule MusicianMemory.RepoTest do
     {:ok, record} = Repo.get(db, id)
     assert record["body"] == "new body"
   end
+
+  test "all_memories/1 returns all records", %{db: db} do
+    {:ok, id1} = Repo.insert(db, %{type: "user", scope: "private", body: "body1", tags: ""})
+    {:ok, id2} = Repo.insert(db, %{type: "project", scope: "team", body: "body2", tags: ""})
+
+    {:ok, rows} = Repo.all_memories(db)
+    assert length(rows) == 2
+    ids = Enum.map(rows, & &1["id"])
+    assert id1 in ids
+    assert id2 in ids
+  end
+
+  test "delete_stale/2 deletes multiple records by id list", %{db: db} do
+    {:ok, id1} = Repo.insert(db, %{type: "user", scope: "private", body: "body1", tags: ""})
+    {:ok, id2} = Repo.insert(db, %{type: "project", scope: "private", body: "body2", tags: ""})
+    {:ok, id3} = Repo.insert(db, %{type: "feedback", scope: "private", body: "body3", tags: ""})
+
+    :ok = Repo.delete_stale(db, [id1, id3])
+
+    {:ok, rows} = Repo.all_memories(db)
+    assert length(rows) == 1
+    assert hd(rows)["id"] == id2
+  end
+
+  test "delete_stale/2 handles empty list gracefully", %{db: db} do
+    :ok = Repo.delete_stale(db, [])
+    {:ok, rows} = Repo.all_memories(db)
+    assert rows == []
+  end
 end

@@ -70,6 +70,28 @@ defmodule MusicianMemory.Repo do
     :ok
   end
 
+  def all_memories(db) do
+    sql = "SELECT id, type, scope, body, tags, created_at, updated_at FROM memories"
+    {:ok, stmt} = Exqlite.Sqlite3.prepare(db, sql)
+    rows = collect_rows(db, stmt, [])
+    :ok = Exqlite.Sqlite3.release(db, stmt)
+    {:ok, rows}
+  end
+
+  def delete_stale(db, ids) when is_list(ids) do
+    case ids do
+      [] -> :ok
+      _ ->
+        placeholders = ids |> Enum.map_join(", ", fn _ -> "?" end)
+        sql = "DELETE FROM memories WHERE id IN (#{placeholders})"
+        {:ok, stmt} = Exqlite.Sqlite3.prepare(db, sql)
+        :ok = Exqlite.Sqlite3.bind(stmt, ids)
+        :done = Exqlite.Sqlite3.step(db, stmt)
+        :ok = Exqlite.Sqlite3.release(db, stmt)
+        :ok
+    end
+  end
+
   defp create_tables(db) do
     Exqlite.Sqlite3.execute(db, """
     CREATE TABLE IF NOT EXISTS memories (
