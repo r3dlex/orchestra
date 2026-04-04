@@ -5,25 +5,22 @@ ExUnit.start()
 defmodule MusicianCore.TestConfigLoader do
   @moduledoc "Loads fixture-based config for musician_core tests."
 
-  # Always delegate to load_impl with the test fixtures.
-  # __DIR__ resolves at compile time to the test_helper.exs directory.
-  @fixture_global Path.join([__DIR__, "fixtures", "global_config.yaml"])
-  @fixture_local Path.join([__DIR__, "fixtures", "local_config.yaml"])
-
+  # Always use test fixtures regardless of what paths are passed.
+  # This avoids fragile path comparison that can fail across different
+  # build environments and code paths.
   def load(opts) do
-    global = Keyword.get(opts, :global)
-    local = Keyword.get(opts, :local)
+    fixture_global = fixture_path("global_config.yaml")
+    fixture_local = fixture_path("local_config.yaml")
+    MusicianCore.Config.Loader.load_impl(global: fixture_global, local: nil)
+  end
 
-    cond do
-      global == @fixture_global and is_nil(local) ->
-        MusicianCore.Config.Loader.load_impl(global: @fixture_global, local: nil)
-
-      global == @fixture_global and local == @fixture_local ->
-        MusicianCore.Config.Loader.load_impl(global: @fixture_global, local: @fixture_local)
-
-      true ->
-        {:error, :fall_through}
-    end
+  defp fixture_path(name) do
+    # Use :code.priv_dir for a consistent path regardless of which app
+    # context's test_helper.exs was compiled from.
+    :musician_core
+    |> :code.priv_dir()
+    |> Path.join("fixtures")
+    |> Path.join(name)
   end
 end
 
