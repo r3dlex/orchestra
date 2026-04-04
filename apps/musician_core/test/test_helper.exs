@@ -15,12 +15,9 @@ defmodule MusicianCore.TestConfigLoader do
   end
 
   defp fixture_path(name) do
-    # Use :code.priv_dir for a consistent path regardless of which app
-    # context's test_helper.exs was compiled from.
-    :musician_core
-    |> :code.priv_dir()
-    |> Path.join("fixtures")
-    |> Path.join(name)
+    # Use Application.app_dir to get the musician_core app root directory.
+    # This works in all contexts including umbrella builds and CI environments.
+    Path.join([Application.app_dir(:musician_core), "test", "fixtures", name])
   end
 end
 
