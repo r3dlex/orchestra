@@ -66,4 +66,27 @@ defmodule MusicianSession.HistoryTest do
     {:ok, entries} = History.read_all(@tmp_file)
     assert length(entries) == 3
   end
+
+  test "append/2 triggers auto-prune when count exceeds max_entries" do
+    # Use a small max_entries for this test
+    Application.put_env(:musician_session, :max_entries, 10)
+
+    on_exit(fn ->
+      Application.put_env(:musician_session, :max_entries, 500)
+    end)
+
+    # Write 12 entries (over the 10 limit)
+    for i <- 1..12 do
+      History.append(@tmp_file, %{
+        session_id: "s#{i}",
+        timestamp: "2026-01-#{String.pad_leading(Integer.to_string(i), 2, "0")}T00:00:00Z",
+        prompt_summary: "entry #{i}"
+      })
+    end
+
+    {:ok, entries} = History.read_all(@tmp_file)
+    assert length(entries) == 10
+    # Oldest entries (s1, s2) should have been pruned
+    assert Enum.all?(entries, &String.starts_with?(&1["session_id"], "s"))
+  end
 end

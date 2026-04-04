@@ -1,9 +1,12 @@
 defmodule MusicianSession.History do
   @moduledoc "JSONL session history — append, read, prune."
 
+  @max_entries Application.get_env(:musician_session, :max_entries, 500)
+
   def append(path, entry) do
     line = Jason.encode!(entry) <> "\n"
     File.write(path, line, [:append])
+    maybe_prune(path)
   end
 
   def read_all(path) do
@@ -37,5 +40,16 @@ defmodule MusicianSession.History do
       error ->
         error
     end
+  end
+
+  defp maybe_prune(path) do
+    case count_lines(path) do
+      n when n > @max_entries -> prune(path, @max_entries)
+      _ -> :ok
+    end
+  end
+
+  defp count_lines(path) do
+    path |> File.stream!() |> Enum.count()
   end
 end
