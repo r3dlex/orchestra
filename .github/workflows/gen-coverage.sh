@@ -14,7 +14,8 @@ mix compile --no-start --no-deps-check
 echo "Running tests with coverage..."
 for app in $APPS; do
   echo "  Testing $app..."
-  MIX_ENV=test mix test "apps/$app" --no-deps-check --cover --export-coverage "$app"
+  MIX_ENV=test mix test "apps/$app" --no-deps-check --cover --export-coverage "$app" || exit 1
+  echo "  Finished $app"
 done
 
 echo "Generating coverage XML..."
