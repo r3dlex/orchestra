@@ -15,6 +15,11 @@ mix deps.get --exclude-apps musician_tui
 echo "Compiling test-only deps (nimble_ownership first, then mox)..."
 MIX_ENV=test mix deps.compile nimble_ownership mox --force
 
+echo "Pre-compiling umbrella apps for test env (from within each app dir)..."
+for app in musician_core musician_auth musician_tools musician_skills musician_memory musician_session musician_plugins orchestra; do
+  (cd "apps/$app" && MIX_ENV=test mix compile --no-start 2>&1) || true
+done
+
 echo "Running per-app tests with coverage..."
 rm -rf cover/ _build/test/cover/ 2>/dev/null || true
 
