@@ -6,7 +6,7 @@ main(_) ->
     CoverdataFiles = lists:filter(
         fun(F) ->
             filelib:is_file(filename:join(["_build/test", F])) andalso
-            string:suffix(F, ".coverdata")
+            ".coverdata" == filename:extension(F)
         end,
         Files
     ),
