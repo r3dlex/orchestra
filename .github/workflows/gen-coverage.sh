@@ -31,9 +31,9 @@ test_app() {
   echo ""
   echo "=== Testing $app ==="
   if [ -n "$exclusions" ]; then
-    (cd "apps/$app" && MIX_ENV=test mix test --cover --export-coverage "$app" $exclusions)
+    (cd "apps/$app" && MIX_ENV=test mix test --no-start --cover --export-coverage "$app" $exclusions)
   else
-    (cd "apps/$app" && MIX_ENV=test mix test --cover --export-coverage "$app")
+    (cd "apps/$app" && MIX_ENV=test mix test --no-start --cover --export-coverage "$app")
   fi
 }
 
@@ -49,8 +49,8 @@ test_app "musician_tools"
 # musician_skills: no exclusions needed
 test_app "musician_skills"
 
-# musician_memory: exclude decay_sweeper_test (flaky timing-based tests)
-test_app "musician_memory" "--exclude" "decay_sweeper_test"
+# musician_memory: no exclusions needed
+test_app "musician_memory"
 
 # musician_session: no exclusions needed
 test_app "musician_session"
