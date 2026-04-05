@@ -15,9 +15,6 @@ mix deps.get --exclude-apps musician_tui
 echo "Compiling test-only deps (nimble_ownership first, then mox)..."
 MIX_ENV=test mix deps.compile nimble_ownership mox --force
 
-echo "Compiling all apps (test env, no-start to skip broken native deps)..."
-MIX_ENV=test mix compile --no-start
-
 echo "Running per-app tests with coverage..."
 rm -rf cover/ _build/test/cover/ 2>/dev/null || true
 
