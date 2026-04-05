@@ -13,7 +13,7 @@ echo "Getting dependencies..."
 mix deps.get --exclude-apps musician_tui
 
 echo "Compiling dependencies (mox is :test only, needs explicit compile)..."
-mix deps.compile mox --force
+MIX_ENV=test mix deps.compile mox --force
 
 echo "Compiling all apps..."
 mix compile --no-start --no-deps-check
