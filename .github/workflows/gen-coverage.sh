@@ -18,6 +18,7 @@ for app in $APPS; do
 done
 
 echo "Generating coverage XML..."
+ls -la cover/*.coverdata 2>/dev/null || echo "No coverdata files found"
 elixir .github/workflows/gen-coverage-xml.exs 2>/dev/null
 
 echo "Done."

@@ -4,8 +4,10 @@
 
 for app <- ~w[musician_core musician_auth musician_tools musician_skills musician_memory musician_session musician_plugins orchestra]a do
   coverdata = "cover/#{app}.coverdata"
+  IO.puts("Checking #{coverdata}: exists=#{File.exists?(coverdata)}")
   if File.exists?(coverdata) do
     :cover.import(String.to_charlist(coverdata))
+    IO.puts("Imported #{coverdata}")
   end
 end
 
