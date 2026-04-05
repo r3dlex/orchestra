@@ -14,18 +14,6 @@ MIX_ENV=test mix test --no-deps-check --cover --export-coverage default
 TEST_EXIT=$?
 
 echo "Generating coverage report..."
-# Use Erlang's :cover directly — erl bypasses Mix so ratatouille deps don't matter.
-# .coverdata files from the test run are in _build/test/.
-mkdir -p _build/coverage
-erl -noshell -eval '
-  {ok, files} = file:list_dir("_build/test"),
-  CoverdataFiles = [filename:join(["_build/test", F]) || F <- files, filelib:is_file(filename:join(["_build/test", F])) andalso string:suffix(F, ".coverdata")],
-  io:format("Found ~p coverdata files~n", [length(CoverdataFiles)]),
-  cover:start(),
-  [cover:import(F) || F <- CoverdataFiles],
-  cover:pmap_write_file("_build/coverage/coverage.xml"),
-  io:format("Coverage report written to _build/coverage/coverage.xml~n"),
-  init:stop()
-'
+escript .github/workflows/gen-coverage.erl
 
 echo "Done (tests exit: $TEST_EXIT)"
