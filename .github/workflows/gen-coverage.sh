@@ -14,38 +14,18 @@ MIX_ENV=test mix test --no-deps-check --cover --export-coverage default
 TEST_EXIT=$?
 
 echo "Generating coverage report..."
-# Use Erlang's :cover directly to avoid Mix deps validation (ratatouille excluded).
-# The .coverdata files are in _build/test/ after --export-coverage.
+# Use Erlang's :cover directly — erl bypasses Mix so ratatouille deps don't matter.
+# .coverdata files from the test run are in _build/test/.
 mkdir -p _build/coverage
-elixir --no-deps-check -e '
-:cover.start()
-
-# Import all .coverdata files exported by the test run
-coverdata_dir = "_build/test"
-output_path = "_build/coverage/coverage.xml"
-
-# Find all .coverdata files
-coverdata_files =
-  case File.ls(coverdata_dir) do
-    {:ok, files} ->
-      files
-      |> Enum.filter(&String.ends_with?(&1, ".coverdata"))
-      |> Enum.map(&Path.join(coverdata_dir, &1))
-    _ ->
-      []
-  end
-
-IO.puts("Found coverdata files: #{length(coverdata_files)}")
-
-# Import each coverdata file
-for file <- coverdata_files do
-  IO.puts("Importing: #{file}")
-  :cover.import(String.to_charlist(file))
-end
-
-# Write XML coverage report
-:cover.pmap_write_file(String.to_charlist(output_path))
-IO.puts("Coverage report written to: #{output_path}")
+erl -noshell -eval '
+  {ok, files} = file:list_dir("_build/test"),
+  CoverdataFiles = [filename:join(["_build/test", F]) || F <- files, filelib:is_file(filename:join(["_build/test", F])) andalso string:suffix(F, ".coverdata")],
+  io:format("Found ~p coverdata files~n", [length(CoverdataFiles)]),
+  cover:start(),
+  [cover:import(F) || F <- CoverdataFiles],
+  cover:pmap_write_file("_build/coverage/coverage.xml"),
+  io:format("Coverage report written to _build/coverage/coverage.xml~n"),
+  init:stop()
 '
 
 echo "Done (tests exit: $TEST_EXIT)"
