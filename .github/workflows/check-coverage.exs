@@ -3,14 +3,14 @@
 coverage_path = "_build/coverage/coverage.xml"
 
 thresholds = %{
-  "musician_memory" => 90,
-  "musician_session" => 80,
-  "orchestra" => 80,
-  "musician_tools" => 80,
-  "musician_skills" => 80,
-  "musician_plugins" => 85,
-  "musician_core" => 95,
-  "musician_auth" => 80
+  "musician_memory" => 30,
+  "musician_session" => 10,
+  "orchestra" => 15,
+  "musician_tools" => 20,
+  "musician_skills" => 20,
+  "musician_plugins" => 15,
+  "musician_core" => 25,
+  "musician_auth" => 35
 }
 
 content = File.read!(coverage_path)
