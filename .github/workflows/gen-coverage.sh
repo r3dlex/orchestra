@@ -31,9 +31,9 @@ test_app() {
   echo ""
   echo "=== Testing $app ==="
   if [ -n "$exclusions" ]; then
-    (cd "apps/$app" && MIX_ENV=test mix test --no-start --no-deps-check --cover --export-coverage "$app" $exclusions)
+    (cd "apps/$app" && MIX_ENV=test mix test --no-deps-check --cover --export-coverage "$app" $exclusions)
   else
-    (cd "apps/$app" && MIX_ENV=test mix test --no-start --no-deps-check --cover --export-coverage "$app")
+    (cd "apps/$app" && MIX_ENV=test mix test --no-deps-check --cover --export-coverage "$app")
   fi
 }
 
