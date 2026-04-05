@@ -17,7 +17,7 @@ mkdir -p "$COVERDATA_DIR"
 TEST_APPS="musician_auth musician_core musician_session orchestra musician_memory musician_tools musician_skills musician_plugins"
 for app in $TEST_APPS; do
   echo "Testing $app..."
-  MIX_ENV=test mix test "apps/$app" --no-deps-check --cover --export-coverage "$COVERDATA_DIR/.coverdata" 2>/dev/null || true
+  MIX_ENV=test mix test "apps/$app" --no-deps-check --cover --export-coverage "$COVERDATA_DIR/.coverdata"
 done
 
 # Now generate XML from collected coverdata using Erlang's :cover directly.
