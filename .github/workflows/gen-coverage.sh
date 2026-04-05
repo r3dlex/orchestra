@@ -26,9 +26,10 @@ done
 
 echo "Generating coverage XML..."
 pwd
-echo "Checking apps/*/cover/ for coverdata:"
-ls apps/*/cover/*.coverdata 2>/dev/null | head -10 || echo "No apps/*/cover/ coverdata"
-echo "Checking cover/ at root:"
+echo "Checking for apps/*/cover/ directories:"
+find apps -name "cover" -type d 2>/dev/null
+echo "Checking for coverdata files:"
+find apps -name "*.coverdata" 2>/dev/null | head -10
 ls cover/*.coverdata 2>/dev/null | head -10 || echo "No cover/ at root"
 elixir .github/workflows/gen-coverage-xml.exs
 
