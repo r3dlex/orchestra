@@ -1,13 +1,11 @@
 #!/bin/bash
 
-set -x
-
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")/../.." && pwd)"
 cd "$SCRIPT_DIR"
 
 APPS="musician_core musician_auth musician_tools musician_skills musician_memory musician_session musician_plugins orchestra"
 
-echo "Removing broken deps (ratatouille/ex_termbox - musician_tui excluded)..."
+echo "Removing broken deps..."
 rm -rf deps/ex_termbox deps/ratatouille _build/MIX/@lib/musician_tui 2>/dev/null || true
 
 echo "Compiling all apps..."
@@ -28,9 +26,10 @@ done
 
 echo "Generating coverage XML..."
 pwd
-ls -la cover/ 2>/dev/null || echo "No cover/"
-ls -la _build/test/cover/ 2>/dev/null || echo "No _build/test/cover/"
-find . -name "*.coverdata" 2>/dev/null | head -10
+echo "Checking apps/*/cover/ for coverdata:"
+ls apps/*/cover/*.coverdata 2>/dev/null | head -10 || echo "No apps/*/cover/ coverdata"
+echo "Checking cover/ at root:"
+ls cover/*.coverdata 2>/dev/null | head -10 || echo "No cover/ at root"
 elixir .github/workflows/gen-coverage-xml.exs
 
 echo "Done."
