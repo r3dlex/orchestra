@@ -13,8 +13,8 @@ main(_) ->
     io:format("Found ~p coverdata files~n", [length(CoverdataFiles)]),
     cover:start(),
     [cover:import(filename:join(["_build/test", F])) || F <- CoverdataFiles],
-    ok = file:make_dir("_build/coverage"),
-    cover:pmap_write_file("_build/coverage/coverage.xml"),
+    file:make_dir("_build/coverage"),
+    cover:write_file("_build/coverage/coverage.xml"),
     io:format("Coverage report written to _build/coverage/coverage.xml~n"),
     init:stop(),
     ok.
