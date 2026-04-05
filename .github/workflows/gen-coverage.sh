@@ -10,14 +10,42 @@ echo "Compiling all apps..."
 mix compile --no-start --no-deps-check
 
 echo "Running umbrella tests with coverage..."
-# Run tests and generate coverage XML in one pass
 MIX_ENV=test mix test --no-deps-check --cover --export-coverage default
 TEST_EXIT=$?
 
 echo "Generating coverage report..."
-# Generate XML using mix test.coverage which runs in the same BEAM after tests
-# The --no-deps-check helps but the test.coverage task itself still validates
-# So we generate our own XML using the test.coverage task format
-mix test.coverage 2>/dev/null || true
+# Use Erlang's :cover directly to avoid Mix deps validation (ratatouille excluded).
+# The .coverdata files are in _build/test/ after --export-coverage.
+mkdir -p _build/coverage
+elixir --no-deps-check -e '
+:cover.start()
+
+# Import all .coverdata files exported by the test run
+coverdata_dir = "_build/test"
+output_path = "_build/coverage/coverage.xml"
+
+# Find all .coverdata files
+coverdata_files =
+  case File.ls(coverdata_dir) do
+    {:ok, files} ->
+      files
+      |> Enum.filter(&String.ends_with?(&1, ".coverdata"))
+      |> Enum.map(&Path.join(coverdata_dir, &1))
+    _ ->
+      []
+  end
+
+IO.puts("Found coverdata files: #{length(coverdata_files)}")
+
+# Import each coverdata file
+for file <- coverdata_files do
+  IO.puts("Importing: #{file}")
+  :cover.import(String.to_charlist(file))
+end
+
+# Write XML coverage report
+:cover.pmap_write_file(String.to_charlist(output_path))
+IO.puts("Coverage report written to: #{output_path}")
+'
 
 echo "Done (tests exit: $TEST_EXIT)"
