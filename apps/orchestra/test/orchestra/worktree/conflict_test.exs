@@ -6,7 +6,7 @@ defmodule Orchestra.Worktree.ConflictTest do
   describe "detect/1" do
     test "returns {:ok, :no_conflict} when git merge-head returns exit code 128" do
       # Simulate: git merge-head on a branch with no active merge → exit 128
-      assert detect_simulate({_, 128}) == {:ok, :no_conflict}
+      assert detect_simulate({"<unused>", 128}) == {:ok, :no_conflict}
     end
 
     test "returns {:error, {:conflicts, files}} when conflicts are present" do

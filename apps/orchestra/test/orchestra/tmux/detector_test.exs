@@ -4,27 +4,23 @@ defmodule Orchestra.Tmux.DetectorTest do
   alias Orchestra.Tmux.Detector
 
   describe "available?/0" do
-    test "returns {:error, :tmux_not_found} when tmux is not in PATH" do
-      path = Application.get_env(:orchestra, :tmux_path, "/usr/bin/tmux")
+    test "returns tmux availability result" do
+      result = Detector.available?()
 
-      # We can't easily mock System.find_executable, so we test the version parsing
-      # logic by checking that parse_version works correctly
-      assert Detector.available?() in [
-               {:ok, _path, _version},
-               {:error, {:tmux_unavailable, :tmux_not_found}},
-               {:error, {:tmux_unavailable, {:tmux_too_old, _old_version}}}
-             ]
+      assert match?({:ok, p, v} when is_binary(p) and is_tuple(v), result) ||
+               match?({:error, :tmux_not_found}, result) ||
+               match?({:error, {:tmux_too_old, v}} when is_tuple(v), result) ||
+               match?({:error, {:tmux_version_check_failed, c}} when is_integer(c), result)
     end
   end
 
   describe "version parsing" do
-    test "parses tmux version string correctly" do
-      # Testing parse_version via the public interface
-      # We verify the behavior through the return type
+    test "version tuple structure when tmux is available" do
       result = Detector.available?()
 
       case result do
-        {:ok, _path, version} ->
+        {:ok, path, version} ->
+          assert is_binary(path)
           assert is_tuple(version)
           assert tuple_size(version) == 3
 

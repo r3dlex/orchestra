@@ -50,12 +50,24 @@ defmodule MusicianMemory.Repo do
   end
 
   def update(db, id, changes) do
-    now = DateTime.utc_now() |> DateTime.to_iso8601()
-    sets = changes |> Map.keys() |> Enum.map_join(", ", fn k -> "#{k} = ?1" end)
+    keys = Map.keys(changes)
     vals = Map.values(changes)
-    sql = "UPDATE memories SET #{sets}, updated_at = '#{now}' WHERE id = #{id}"
+
+    # If updated_at is in changes, use provided value; otherwise use current time
+    now = DateTime.utc_now() |> DateTime.to_iso8601()
+    final_keys = if "updated_at" in keys, do: keys, else: keys ++ ["updated_at"]
+    final_vals = if "updated_at" in keys, do: vals, else: vals ++ [now]
+
+    # Build "col1 = ?1, col2 = ?2, ..." clause
+    set_clause =
+      final_keys
+      |> Enum.with_index(1)
+      |> Enum.map_join(", ", fn {k, i} -> "#{k} = ?#{i}" end)
+
+    sql = "UPDATE memories SET #{set_clause} WHERE id = ?#{length(final_vals) + 1}"
+
     {:ok, stmt} = Exqlite.Sqlite3.prepare(db, sql)
-    :ok = Exqlite.Sqlite3.bind(stmt, vals)
+    :ok = Exqlite.Sqlite3.bind(stmt, final_vals ++ [id])
     :done = Exqlite.Sqlite3.step(db, stmt)
     :ok = Exqlite.Sqlite3.release(db, stmt)
     :ok

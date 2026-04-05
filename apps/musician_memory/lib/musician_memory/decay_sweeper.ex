@@ -17,8 +17,11 @@ defmodule MusicianMemory.DecaySweeper do
   """
   def run do
     {:ok, db} = Repo.init(Application.fetch_env!(:musician_memory, :db_path))
-    on_exit(fn -> Repo.close(db) end)
-    sweep_all(db)
+    try do
+      sweep_all(db)
+    after
+      Repo.close(db)
+    end
   end
 
   defp sweep_all(db) do

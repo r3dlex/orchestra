@@ -5,18 +5,51 @@ ExUnit.start()
 defmodule MusicianCore.TestConfigLoader do
   @moduledoc "Loads fixture-based config for musician_core tests."
 
-  # Always use test fixtures regardless of what paths are passed.
-  # This avoids fragile path comparison that can fail across different
-  # build environments and code paths.
+  @behaviour MusicianCore.Config.Loader.Behaviour
+
+  @impl true
   def load(opts) do
+    opts = normalize_opts(opts)
+    global = Keyword.get(opts, :global, "")
+    local = Keyword.get(opts, :local)
+
     fixture_global = fixture_path("global_config.yaml")
     fixture_local = fixture_path("local_config.yaml")
-    MusicianCore.Config.Loader.load_impl(global: fixture_global, local: nil)
+
+    # Determine effective global path:
+    # - if explicit path exists, use it
+    # - otherwise use fixture
+    final_global =
+      if global != "" and File.exists?(global) do
+        global
+      else
+        fixture_global
+      end
+
+    # Determine effective local path:
+    # - if local is explicitly nil, pass nil (no local override)
+    # - if explicit local path exists, use it
+    # - if local is provided but doesn't exist, use fixture
+    # - if local is not provided at all, use fixture
+    final_local =
+      cond do
+        is_nil(local) ->
+          nil
+
+        local != "" and File.exists?(local) ->
+          local
+
+        true ->
+          fixture_local
+      end
+
+    MusicianCore.Config.Loader.load_impl(global: final_global, local: final_local)
   end
 
+  defp normalize_opts(opts) when is_list(opts), do: opts
+  defp normalize_opts(_), do: []
+
   defp fixture_path(name) do
-    # Use :code.priv_dir to find musician_core's priv directory.
-    # This is the standard way to access runtime assets for an OTP app.
     priv = :code.priv_dir(:musician_core) |> List.to_string()
     Path.join([priv, "fixtures", name])
   end
