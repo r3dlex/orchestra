@@ -12,11 +12,6 @@ mix lock --remove ratatouille 2>/dev/null || true
 echo "Getting dependencies..."
 mix deps.get --exclude-apps musician_tui
 
-echo "Compiling dependencies (excluding broken native deps)..."
-for dep in jason meck bypass plug finch mint req yaml_elixir nimble_ownership mox exqlite cc_precompiler db_connection musician_auth; do
-  MIX_ENV=test mix deps.compile $dep --force 2>/dev/null || true
-done
-
 echo "Compiling all apps..."
 mix compile --no-start --no-deps-check
 
