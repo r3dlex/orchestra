@@ -29,6 +29,6 @@ pwd
 ls -la cover/ 2>/dev/null || echo "No cover/ directory"
 ls -la _build/test/cover/ 2>/dev/null || echo "No _build/test/cover/"
 find . -name "*.coverdata" 2>/dev/null | head -10
-elixir .github/workflows/gen-coverage-xml.exs 2>/dev/null
+elixir .github/workflows/gen-coverage-xml.exs
 
 echo "Done."
