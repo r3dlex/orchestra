@@ -14,7 +14,13 @@ mix compile --no-start --no-deps-check
 echo "Running tests with coverage..."
 for app in $APPS; do
   echo "  Testing $app..."
-  MIX_ENV=test mix test "apps/$app" --no-deps-check --cover --export-coverage "$app" || exit 1
+  MIX_ENV=test mix test "apps/$app" --no-deps-check --cover --export-coverage "$app"
+  result=$?
+  echo "  Exit code from $app: $result"
+  if [ $result -ne 0 ]; then
+    echo "TEST FAILED with exit code $result"
+    exit 1
+  fi
   echo "  Finished $app"
 done
 
