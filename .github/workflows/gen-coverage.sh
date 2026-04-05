@@ -26,9 +26,15 @@ done
 
 echo "Generating coverage XML..."
 pwd
+echo "Before tests - checking for coverdata:"
 ls -la cover/ 2>/dev/null || echo "No cover/ directory"
+find _build -name "*.coverdata" 2>/dev/null | head -10
+echo "Running a single test to see coverdata location..."
+rm -rf cover/ _build/test/cover/ 2>/dev/null
+MIX_ENV=test mix test "apps/orchestra/test/orchestra/tmux/detector_test.exs" --no-deps-check --cover --export-coverage testrun 2>&1 | tail -5
+echo "After test:"
+find . -name "*.coverdata" 2>/dev/null
+ls -la cover/ 2>/dev/null || echo "No cover/"
 ls -la _build/test/cover/ 2>/dev/null || echo "No _build/test/cover/"
-find . -name "*.coverdata" 2>/dev/null | head -10
-elixir .github/workflows/gen-coverage-xml.exs
 
 echo "Done."
