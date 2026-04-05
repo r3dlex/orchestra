@@ -79,7 +79,7 @@ help:
 	@echo "  codex-login     Authenticate with Codex (device code flow, stores token)"
 	@echo ""
 	@echo "Tests"
-	@echo "  test            Run unit tests (184 tests)"
+	@echo "  test            Run unit tests (203 tests)"
 	@echo "  test-e2e        Run all provider E2E tests (MINIMAX_API_KEY from .env)"
 	@echo "  test-minimax    Run MiniMax E2E tests only"
 	@echo "  test-codex      Run Codex E2E tests (requires prior codex-login)"

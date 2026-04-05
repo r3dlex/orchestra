@@ -7,7 +7,7 @@
 
   Talk to any LLM. Automate with agents. Remember everything. Ship faster.
 
-  ![Tests](https://img.shields.io/badge/tests-184%20passing-brightgreen)
+  ![Tests](https://img.shields.io/badge/tests-203%20passing-brightgreen)
   ![Elixir](https://img.shields.io/badge/elixir-1.17%2B-purple)
   ![OTP](https://img.shields.io/badge/OTP-26%2B-blue)
   ![Status](https://img.shields.io/badge/phases%201--5-complete-success)

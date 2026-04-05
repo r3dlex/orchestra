@@ -4,17 +4,15 @@
 
 | App | Tests |
 |-----|-------|
-| musician_plugins | 16 |
-| musician_tui | 18 |
+| musician_core | 52 |
+| musician_auth | 35 |
+| orchestra | 42 |
 | musician_tools | 22 |
-| musician_skills | 7 |
-| musician_session | 12 |
-| orchestra | 33 |
-| musician_core | 37 |
-| musician_auth | 21 |
-| musician_memory | 17 |
-| musician_cli | 1 |
-| **Total** | **184** |
+| musician_skills | 18 |
+| musician_memory | 21 |
+| musician_session | 6 |
+| musician_plugins | 7 |
+| **Total** | **203** |
 
 ## Test Layers
 

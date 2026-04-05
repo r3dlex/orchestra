@@ -16,7 +16,7 @@ This repository has two layers:
 
 ```sh
 mix deps.get
-mix test                          # 184 tests, 0 failures (Phases 1-5 complete)
+mix test                          # 203 tests, 0 failures (Phases 1-5 complete)
 mix test apps/musician_core       # single app
 mix pipeline                      # full CI (compile + test + credo + dialyzer)
 
