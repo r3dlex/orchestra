@@ -38,7 +38,7 @@ jobs:
         run: bash .github/workflows/gen-coverage.sh
 
       - name: Check coverage thresholds
-        run: elixir .github/workflows/check-coverage.exs
+        run: MIX_ENV=test mix run -e "Mix.Tasks.Musician.CheckCoverage.run([])"
 
   # --------------------------------------------------------------------------
   # Node.js: tests + archgate ADR check
