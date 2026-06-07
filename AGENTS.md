@@ -157,3 +157,8 @@ src/
 - Some files reference internal Anthropic infrastructure (telemetry, feature flags) not publicly accessible
 - `data/package/vendor/` contains pre-built native binaries (ripgrep, audio-capture) for multiple platforms
 - Built with Bun bundler; single ESM output (`"type": "module"`); Node.js >= 18 required
+
+<!-- v3-ai-sdlc-init:start -->
+## AI SDLC v3
+This repo follows the v3 AI-SDLC layout. See `.ai/matrix.json`, `.memory/human-override/`, and `docs/architecture/adr/`. Modules at `r3dlex/skills/ai-sdlc-init/modules/`.
+<!-- v3-ai-sdlc-init:end -->
