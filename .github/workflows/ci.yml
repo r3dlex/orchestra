@@ -14,10 +14,13 @@ jobs:
   # --------------------------------------------------------------------------
   # Elixir / Mix: all umbrella apps
   # --------------------------------------------------------------------------
-  elixir:
-    name: Elixir tests
-    runs-on: ubuntu-latest
+  _elixir-self-hosted:
+    name: "Elixir tests (self-hosted)"
+    runs-on: [self-hosted, ubuntu-latest]
+    continue-on-error: true
     timeout-minutes: 15
+    outputs:
+      passed: ${{ steps.mark.outputs.passed }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,13 +43,58 @@ jobs:
       - name: Check coverage thresholds
         run: elixir .github/workflows/check-coverage.exs
 
+      - id: mark
+        if: success()
+        run: echo "passed=true" >> "$GITHUB_OUTPUT"
+
+  elixir:
+    name: Elixir tests
+    needs: _elixir-self-hosted
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Route
+        run: echo "self-hosted passed=${{ needs._elixir-self-hosted.outputs.passed }}"
+
+      - uses: actions/checkout@v4
+        if: needs._elixir-self-hosted.outputs.passed != 'true'
+
+      - uses: erlef/setup-beam@v1
+        if: needs._elixir-self-hosted.outputs.passed != 'true'
+        with:
+          otp-version: "27"
+          elixir-version: "1.17"
+
+      - name: Install dependencies (excluding musician_tui — ratatouille→ex_termbox uses removed Python imp module)
+        if: needs._elixir-self-hosted.outputs.passed != 'true'
+        run: mix deps.get --exclude-apps musician_tui
+
+      - name: Remove broken transitive deps and update lock
+        if: needs._elixir-self-hosted.outputs.passed != 'true'
+        run: |
+          rm -rf deps/ex_termbox deps/ratatouille _build/MIX/@lib/musician_tui 2>/dev/null || true
+          mix lock --remove ratatouille 2>/dev/null || true
+
+      - name: Run tests with coverage and generate XML
+        if: needs._elixir-self-hosted.outputs.passed != 'true'
+        run: bash .github/workflows/gen-coverage.sh
+
+      - name: Check coverage thresholds
+        if: needs._elixir-self-hosted.outputs.passed != 'true'
+        run: elixir .github/workflows/check-coverage.exs
+
   # --------------------------------------------------------------------------
   # Node.js: tests + archgate ADR check
   # --------------------------------------------------------------------------
-  node:
-    name: Node.js tests & ADR check
-    runs-on: ubuntu-latest
+  _node-self-hosted:
+    name: "Node.js tests & ADR check (self-hosted)"
+    # archgate ships no linux/arm64 binary; route to the macOS (darwin/arm64) self-hosted runner where it is supported.
+    runs-on: [self-hosted, macOS]
+    continue-on-error: true
     timeout-minutes: 15
+    outputs:
+      passed: ${{ steps.mark.outputs.passed }}
     steps:
       - uses: actions/checkout@v4
 
@@ -63,17 +111,53 @@ jobs:
       - name: Archgate ADR compliance check
         run: npx --yes archgate@latest check
 
+      - id: mark
+        if: success()
+        run: echo "passed=true" >> "$GITHUB_OUTPUT"
+
+  node:
+    name: Node.js tests & ADR check
+    needs: _node-self-hosted
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Route
+        run: echo "self-hosted passed=${{ needs._node-self-hosted.outputs.passed }}"
+
+      - uses: actions/checkout@v4
+        if: needs._node-self-hosted.outputs.passed != 'true'
+
+      - uses: jdx/mise-action@v2
+        if: needs._node-self-hosted.outputs.passed != 'true'
+        with:
+          cache: true
+
+      - name: Install Node.js dependencies
+        if: needs._node-self-hosted.outputs.passed != 'true'
+        run: npm ci --ignore-scripts
+
+      - name: Run tests with coverage
+        if: needs._node-self-hosted.outputs.passed != 'true'
+        run: npx vitest run --coverage
+
+      - name: Archgate ADR compliance check
+        if: needs._node-self-hosted.outputs.passed != 'true'
+        run: npx --yes archgate@latest check
+
   # --------------------------------------------------------------------------
   # Python: pipeline runner tests + lint
   # --------------------------------------------------------------------------
-  python:
-    name: Python pipeline-runner
-    runs-on: ubuntu-latest
+  _python-self-hosted:
+    name: "Python pipeline-runner (self-hosted)"
+    runs-on: [self-hosted, ubuntu-latest]
+    continue-on-error: true
     timeout-minutes: 10
     defaults:
       run:
         working-directory: tools/pipeline_runner
-
+    outputs:
+      passed: ${{ steps.mark.outputs.passed }}
     steps:
       - uses: actions/checkout@v4
 
@@ -94,6 +178,54 @@ jobs:
         run: poetry run mypy pipeline_runner
 
       - name: Run tests
+        run: poetry run pytest --tb=short
+
+      - id: mark
+        if: success()
+        working-directory: ${{ github.workspace }}
+        run: echo "passed=true" >> "$GITHUB_OUTPUT"
+
+  python:
+    name: Python pipeline-runner
+    needs: _python-self-hosted
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tools/pipeline_runner
+
+    steps:
+      - name: Route
+        working-directory: ${{ github.workspace }}
+        run: echo "self-hosted passed=${{ needs._python-self-hosted.outputs.passed }}"
+
+      - uses: actions/checkout@v4
+        if: needs._python-self-hosted.outputs.passed != 'true'
+
+      - uses: jdx/mise-action@v2
+        if: needs._python-self-hosted.outputs.passed != 'true'
+        with:
+          cache: true
+
+      - name: Install Poetry
+        if: needs._python-self-hosted.outputs.passed != 'true'
+        run: pipx install poetry
+
+      - name: Install dependencies
+        if: needs._python-self-hosted.outputs.passed != 'true'
+        run: poetry install --no-interaction
+
+      - name: Ruff lint
+        if: needs._python-self-hosted.outputs.passed != 'true'
+        run: poetry run ruff check .
+
+      - name: Mypy type check
+        if: needs._python-self-hosted.outputs.passed != 'true'
+        run: poetry run mypy pipeline_runner
+
+      - name: Run tests
+        if: needs._python-self-hosted.outputs.passed != 'true'
         run: poetry run pytest --tb=short
 
   # --------------------------------------------------------------------------
