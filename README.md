@@ -18,7 +18,7 @@ of the Musician build.
 
 - Git
 - Elixir 1.17 or newer
-- Erlang/OTP 26 or newer (CI currently uses OTP 27)
+- Erlang/OTP 27. The locked test dependencies are not currently compatible with OTP 29.
 - Provider access for live prompts: an API credential, a Codex device login, or a local
   Ollama server
 - Zig 0.13.0 only when building a Burrito release
@@ -190,7 +190,7 @@ package-manager upgrade, or downloadable executable are intentionally omitted.
 
 ### `elixir` or `mix` is not found
 
-Install Elixir 1.17+ with Erlang/OTP 26+, then confirm both are visible:
+Install Elixir 1.17+ with Erlang/OTP 27, then confirm both are visible:
 
 ```sh
 elixir --version
