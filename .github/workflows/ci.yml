@@ -17,6 +17,9 @@ jobs:
   _elixir-self-hosted:
     name: "Elixir tests (self-hosted)"
     runs-on: [self-hosted, ubuntu-latest]
+    # erlef/setup-beam cannot infer the hosted image alias on custom runners.
+    env:
+      ImageOS: ubuntu24
     continue-on-error: true
     timeout-minutes: 15
     outputs:
