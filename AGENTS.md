@@ -71,7 +71,7 @@ MINIMAX_API_KEY=sk-cp-... mix test --only provider_e2e
 
 ### Conventions
 
-- Elixir 1.17+, Erlang/OTP 26+, Zig 0.13.0 (binary builds only)
+- Elixir 1.17+, Erlang/OTP 27, Zig 0.13.0 (binary builds only)
 - YAML config everywhere; global `~/.musician/config.yaml`, local `.musician/config.yaml`
 - API keys always via env var (`api_key_env` field), never hardcoded
 - E2E tests tagged `@moduletag :provider_e2e`, `async: false`, skip inline when key absent
