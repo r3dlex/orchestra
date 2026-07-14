@@ -16,6 +16,7 @@ jobs:
   # --------------------------------------------------------------------------
   _elixir-self-hosted:
     name: "Elixir tests (self-hosted)"
+    if: vars.SELF_HOSTED_CI_ENABLED == 'true'
     runs-on: [self-hosted, ubuntu-latest]
     # erlef/setup-beam cannot infer the hosted image alias on custom runners.
     env:
@@ -92,6 +93,7 @@ jobs:
   # --------------------------------------------------------------------------
   _node-self-hosted:
     name: "Node.js tests & ADR check (self-hosted)"
+    if: vars.SELF_HOSTED_CI_ENABLED == 'true'
     # archgate ships no linux/arm64 binary; route to the macOS (darwin/arm64) self-hosted runner where it is supported.
     runs-on: [self-hosted, macOS]
     continue-on-error: true
@@ -153,6 +155,7 @@ jobs:
   # --------------------------------------------------------------------------
   _python-self-hosted:
     name: "Python pipeline-runner (self-hosted)"
+    if: vars.SELF_HOSTED_CI_ENABLED == 'true'
     runs-on: [self-hosted, ubuntu-latest]
     continue-on-error: true
     timeout-minutes: 10
